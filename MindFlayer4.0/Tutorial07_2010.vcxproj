@@ -384,6 +384,7 @@
     <ClCompile Include="ImGui\ImGuiDirectX\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\ImGuiDirectX\imgui_widgets.cpp" />
     <ClCompile Include="mdDevice.cpp" />
+    <ClCompile Include="mfBasePass.cpp" />
     <ClCompile Include="mfBaseShader.cpp" />
     <ClCompile Include="mfBaseTexture.cpp" />
     <ClCompile Include="mfBuffer.cpp" />
@@ -395,6 +396,7 @@
     <ClCompile Include="mfGameObject.cpp" />
     <ClCompile Include="mfImGui.cpp" />
     <ClCompile Include="mfInputLayout.cpp" />
+    <ClCompile Include="mfLightPass.cpp" />
     <ClCompile Include="mfLoadModel.cpp" />
     <ClCompile Include="mfMaterial.cpp" />
     <ClCompile Include="mfMesh.cpp" />
@@ -431,6 +433,7 @@
     <ClInclude Include="ImGui\ImGuiDirectX\imstb_textedit.h" />
     <ClInclude Include="ImGui\ImGuiDirectX\imstb_truetype.h" />
     <ClInclude Include="mdDevice.h" />
+    <ClInclude Include="mfBasePass.h" />
     <ClInclude Include="mfBaseShader.h" />
     <ClInclude Include="mfBaseTexture.h" />
     <ClInclude Include="mfBuffer.h" />
@@ -443,6 +446,7 @@
     <ClInclude Include="mfGameObject.h" />
     <ClInclude Include="mfImGui.h" />
     <ClInclude Include="mfInputLayout.h" />
+    <ClInclude Include="mfLightPass.h" />
     <ClInclude Include="mfLoadModel.h" />
     <ClInclude Include="mfMaterial.h" />
     <ClInclude Include="mfMesh.h" />
@@ -469,6 +473,9 @@
     <ResourceCompile Include="Tutorial07.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Light.fx">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

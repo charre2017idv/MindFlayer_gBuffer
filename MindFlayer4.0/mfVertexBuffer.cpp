@@ -23,8 +23,12 @@ void mfVertexBuffer::Init(mfBufferDesc _BufferDesc, mfVertexBufferDesc _VertexBu
   }
 }
 
-void mfVertexBuffer::Update(unsigned int _Stride, unsigned int _Offset)
+void mfVertexBuffer::Update()
 { 
+}
+
+void mfVertexBuffer::Render(unsigned int _Stride, unsigned int _Offset)
+{
   mfGraphic_API::getSingleton().IASetVertexBuffers(0, 1, *this, _Stride, _Offset);
 }
 

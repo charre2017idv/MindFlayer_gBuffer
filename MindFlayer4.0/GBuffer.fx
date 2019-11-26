@@ -43,7 +43,7 @@ struct VS_INPUT
  */
 struct VS_OUTPUT
 {
-  float4 psPos             : POSITION0;  // Position in projected space
+  float4 psPos             : SV_POSITION0;  // Position in projected space
   float4 wsPos             : TEXCOORD0;  // Position in world space
   float2 texCoord          : TEXCOORD1;  // Texcoord in normalized space 
   float3 wsNormal          : NORMAL0;    // Normal in world space
@@ -55,7 +55,7 @@ struct VS_OUTPUT
  */
 struct PS_INPUT
 {
-  float4 psPos             : POSITION0;  // Position in projected space
+  float4 psPos             : SV_POSITION0;  // Position in projected space
   float4 wsPos             : TEXCOORD0;  // Position in world space
   float2 texCoord          : TEXCOORD1;  // Texcoord in normalized space 
   float3 wsNormal          : NORMAL0;    // Normal in world space
@@ -99,7 +99,7 @@ VS_OUTPUT VS(VS_INPUT Input)
 
   // Output
   VS_OUTPUT Output;
-  Output.psPos = float4(Input.msPos.xyz, 1.0f);
+  Output.psPos = psPos;
   Output.wsPos = wsPos;
   Output.texCoord = Input.texCoord;
   Output.wsNormal = wsNormal;
@@ -134,7 +134,7 @@ PS_OUTPUT PS(PS_INPUT Input)
 
   // Output 
   PS_OUTPUT Output;
-  Output.posRT = float4(Input.wsPos.xyz, 0.0);;
+  Output.posRT = float4(Input.wsPos.xyz, 0.0);
   Output.colorRT = float4(color.xyz, 0.0f);
   Output.normalRT = float4(wsNormal.xyz, 0.0f);
   Output.specularRT = float4(specular.xxx, 0.0f);

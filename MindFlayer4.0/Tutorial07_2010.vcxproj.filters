@@ -247,6 +247,8 @@
     <ClInclude Include="mfRasterizer.h">
       <Filter>Rasterizer</Filter>
     </ClInclude>
+    <ClInclude Include="mfBasePass.h" />
+    <ClInclude Include="mfLightPass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tutorial07.cpp" />
@@ -364,12 +366,17 @@
     <ClCompile Include="mfRasterizer.cpp">
       <Filter>Rasterizer</Filter>
     </ClCompile>
+    <ClCompile Include="mfBasePass.cpp" />
+    <ClCompile Include="mfLightPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fx">
       <Filter>Shaders</Filter>
     </None>
     <None Include="GBuffer.fx">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Light.fx">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -13,6 +13,7 @@ mfCamera::~mfCamera()
 
 void mfCamera::Init(mfCameraDesc _Desc)
 {
+  m_descriptor = _Desc;
   m_Eye = XMVectorSet(_Desc.Eye.x, _Desc.Eye.y, _Desc.Eye.z, _Desc.Eye.w);
   m_Up = XMVectorSet(_Desc.Up.x, _Desc.Up.y, _Desc.Up.z, _Desc.Up.w);
   m_Front = XMVectorSet(_Desc.Front.x, _Desc.Front.y, _Desc.Front.z, _Desc.Front.w);
@@ -122,4 +123,9 @@ void mfCamera::move(Vector3 * mat)
 
   Render();
   setViewMatrix();
+}
+
+mfCameraDesc & mfCamera::getDescriptor()
+{
+  return m_descriptor;
 }

@@ -12,23 +12,27 @@
   */
 #include "mfDefines.h"
 #include "mfGraphic_API.h"
+#include "mfTexture.h"
 #include "mfRenderTarget.h"
 #include "mfVertexShader.h"
 #include "mfInputLayout.h"
 #include "mfPixelShader.h"
 #include "mfMesh.h"
-#include "mfCamera.h"
-#include "mfConstBuffer.h"
 #include "mfSampler.h"
 #include "mfGameObject.h"
 #include "mfRasterizer.h"
+#include "mfConstBuffer.h"
+#include "mfCamera.h"
 #pragma once
+/**
+ * Forward Class Declarations 
+ */
 class mfLoadModel;
 class mfDepthStencilView;
 /**
- * @brief : 
+ * @brief :
  */
-struct mfPassDesc
+struct mfBasePassDesc
 {
   mfLoadModelID RawData;
   mfBufferDesc ViewBufferDesc;
@@ -39,7 +43,23 @@ struct mfPassDesc
   WCHAR * VertexShaderFileName;
   WCHAR * PixelShaderFileName;
   mfRasterizerDesc RasterizerDesc;
+  mfInputLayoutDesc InputLayoutDesc;
 };
+/**
+ * @brief : 
+ */
+struct mfgBufferPassID
+{
+  /**
+   * @brief :
+   */
+  ID3D11RenderTargetView* RenderTargets[4];
+  /**
+   * @brief : 
+   */
+  ID3D11Texture2D* RenderTargetTextures[4];
+};
+
   /**
    * @brief :
    */
@@ -55,52 +75,8 @@ private:
   /**
    * @brief : 
    */
-  mfPassDesc m_descriptor;
-  /**
-   * @brief : 
-   */
-  mfRenderTarget m_RenderTarget;
-
-  ID3D11Texture2D* renderTargetTextureArray[4];
-  ID3D11RenderTargetView* renderTargetViewArray[4];
-  ID3D11ShaderResourceView* shaderResourceViewArray[4];
-
-  /**
-   * @brief : 
-   */
-  mfGameObject m_GameObject;
-  /**
-   * @brief : 
-   */
-  mfVertexShader m_VertexShader;
-  /**
-   * @brief : 
-   */
-  mfInputLayout m_InputLayout;
-  /**
-   * @brief : 
-   */
-  mfPixelShader m_PixelShader;
-  /**
-   * @brief : 
-   */
-  mfConstBuffer m_ViewBuffer;
-  /**
-   * @brief : 
-   */
-  mfConstBuffer m_ProjBuffer;
-  /**
-   * @brief : 
-   */
-  mfCamera m_Camera;
-  /**
-   * @brief : 
-   */
-  mfSampler m_SamplerState;
-  /**
-   * @brief : 
-   */
-  mfRasterizer m_Rasterizer;
+  mfgBufferPassID m_gBuffer;
+  
   /**
    * @brief : 
    */
@@ -120,7 +96,60 @@ private:
   /**
    * @brief : 
    */
-  ID3D11ShaderResourceView* m_Textures[4];
+  float whiteClearcolor[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; // red, green, blue, alpha 
+  /**
+   * @brief : 
+   */
+  ID3D11ShaderResourceView* m_Textures[2];
+  /**
+* @brief :
+*/
+  mfConstBuffer m_ViewBuffer;
+  /**
+   * @brief :
+   */
+  mfConstBuffer m_ProjBuffer;
+  /**
+   * @brief :
+   */
+  CBNeverChanges View;
+  /**
+   * @brief :
+   */
+  CBChangeOnResize Projection;
+  /**
+   * @brief :
+   */
+  mfCamera m_Camera;
+  /**
+   * @brief :
+   */
+  mfBasePassDesc m_descriptor;
+private:
+  /**
+   * @brief :
+   */
+  mfGameObject m_GameObject;
+  /**
+   * @brief :
+   */
+  mfVertexShader m_VertexShader;
+  /**
+   * @brief :
+   */
+  mfInputLayout m_InputLayout;
+  /**
+   * @brief :
+   */
+  mfPixelShader m_PixelShader;
+  /**
+   * @brief :
+   */
+  mfSampler m_SamplerState;
+  /**
+   * @brief :
+   */
+  mfRasterizer m_Rasterizer;
   /**
    * Methods
    */
@@ -131,21 +160,20 @@ public:
     * @bug    : No known bugs.
     */
   void
-    Init(mfPassDesc _Desc);
+    Init(mfBasePassDesc _Desc);
   /**
     * @brief  :
     * @param  :
     * @bug    : No known bugs.
     */
   void
-    Update(mfDepthStencilView & _DepthStencilView);
+    Update(mfDepthStencilView & _DepthStencilView, float _Time);
   /**
-    * @brief  :
-    * @param  :
-    * @bug    : No known bugs.
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
     */
-  void
-    Render();
+  void Render();
   /**
     * @brief  :
     * @param  :
@@ -153,6 +181,13 @@ public:
     */
   void
     Destroy();
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  mfgBufferPassID & getInterface();
 
+  mfCamera & getCamera();
 };
 

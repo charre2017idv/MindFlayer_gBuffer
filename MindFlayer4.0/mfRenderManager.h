@@ -13,6 +13,7 @@
 #include "mfDefines.h"
 #include "mfGraphic_API.h"
 #include "mfPass.h"
+#include "mfLightPass.h"
 #include "mfDepthStencil.h"
 #include "mfDepthStencilView.h"
 #include "mfSwapchain.h"
@@ -20,6 +21,7 @@
 #include "mfLoadModel.h"
 #include "mfOpenFile.h"
 #include "mfWindow.h"
+#include "mfCamera.h"
 #pragma once
 /**
  * Forward Class Declarations 
@@ -49,6 +51,7 @@ private:
    * @brief : 
    */
   mfSwapchain m_Swapchain;
+  mfRenderTarget m_RenderTarget;
   /**
    * @brief : 
    */
@@ -65,6 +68,7 @@ private:
    * @brief : 
    */
   mfLoadModel m_LoadModel;
+  mfLoadModel m_loadSAQ;
   /**
    * @brief : 
    */
@@ -73,10 +77,15 @@ private:
    * @brief : 
    */
   mfOpenFile OpenTextureFile;
+
   /**
    * @brief : 
    */
   mfPass m_gBuffer_Pass;
+  /**
+   * @brief : 
+   */
+  mfLightPass m_Light_Pass;
   /**
    * @brief : 
    */

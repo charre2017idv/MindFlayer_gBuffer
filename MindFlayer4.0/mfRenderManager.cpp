@@ -89,10 +89,6 @@ HRESULT mfRenderManager::Init()
     return hr;
 #endif // mfDIRECTX
 
-  // 4.1) Set back buffer
-  m_Swapchain.setBackBuffer();
-   //hr = mfRenderManager::getSingleton().CreateRenderTargetView(Swapchain, RenderTarget);
-
    /**
    * @brief : Initialization of Depth Stencil
    */
@@ -132,12 +128,19 @@ HRESULT mfRenderManager::Init()
   ModelBufferDesc.BindFlags = mf_BIND_CONSTANT_BUFFER;
   ModelBufferDesc.CPUAccessFlags = 0;
 
+  mfBufferDesc SAQBufferDesc;
+  SAQBufferDesc.Usage = mf_USAGE_DEFAULT;
+  SAQBufferDesc.ByteWidth = sizeof(CBChangesEveryFrame);
+  SAQBufferDesc.BindFlags = mf_BIND_CONSTANT_BUFFER;
+  SAQBufferDesc.CPUAccessFlags = 0;
+
   mfCameraDesc gBufferCameraDesc;
-  gBufferCameraDesc.Eye = Vector4{ 0.0f, 3.0f, -6.0f, 0.0f };
+  gBufferCameraDesc.Eye = Vector4{ 200.0f, 0.0f, 0.0f, 0.0f };
   gBufferCameraDesc.Up = Vector4{ 0.0f, 1.0f, 0.0f, 0.0f };
-  gBufferCameraDesc.Front = Vector4{ 0.0f, 1.0f, 0.0f, 0.0f };
+  gBufferCameraDesc.LookAt = Vector4{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+  gBufferCameraDesc.Front = Vector4{ 0.0f, 0.0f, 0.0f, 0.0f };
   gBufferCameraDesc.Right = Vector4{ 1.0f, 0.0f, 0.0f, 0.0f };
-  gBufferCameraDesc.LookAt = Vector4{ 0.0f, 1.0f, 0.0f, 0.0f };
 
   mfSamplerDesc SamplerStateDesc;
   SamplerStateDesc.Filter = mf_FILTER_MIN_MAG_MIP_LINEAR;
@@ -152,29 +155,32 @@ HRESULT mfRenderManager::Init()
   RasterizerDesc.CullMode = mf_CULL_NONE;
   RasterizerDesc.FillMode = mf_FILL_SOLID;
 
+  mfRasterizerDesc RasterizerLightDesc;
+  RasterizerLightDesc.CullMode = mf_CULL_NONE;
+  RasterizerLightDesc.FillMode = mf_FILL_SOLID;
+
+  mfInputLayoutDesc InputlayoutDesc;
+  InputlayoutDesc.Desc[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+  InputlayoutDesc.Desc[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+  InputlayoutDesc.Desc[2] = { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 };
+  InputlayoutDesc.Desc[3] = { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 };
+
+  mfInputLayoutDesc Light_InputlayoutDesc;
+  Light_InputlayoutDesc.Desc[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+  Light_InputlayoutDesc.Desc[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+  Light_InputlayoutDesc.Desc[2] = { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 };
+  Light_InputlayoutDesc.Desc[3] = { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 };
   /**
    * @brief : Load Model from file
    */
-  m_LoadModel.Init("Meshes/drakefire-pistol/ScreenAlignedQuad.3ds");
-
+  //m_LoadModel.Init("Meshes/drakefire-pistol/drakefire_pistol_low.obj");
+  //m_LoadModel.Init("Meshes/ice/source/LP.obj");
+  //m_LoadModel.Init("Meshes/M-FF_iOS_HERO_Peter_Parker_Spider-Man_All_New/AllNew.obj");
+  m_LoadModel.Init("Meshes/Axe/gun.obj");
   /**
-   * @brief : Initialization of Depth Stencil View
+   * @brief : Load SAQ from file
    */
-  mfDepthStencilViewDesc depthStencilViewDesc;
-  depthStencilViewDesc.texFormat = depthStencilDesc.TexFormat/*descDepth.Format*/;
-  depthStencilViewDesc.ViewDimension = mf_DSV_DIMENSION_TEXTURE2D;
-  depthStencilViewDesc.MipSlice = 0;
-#ifdef mfDIRECTX
-  depthStencilViewDesc.Resource = m_DepthStencil.getInterface().ID;
-#endif // mfDIRECTX
-
-  m_DepthStencilView.Init(depthStencilViewDesc);
-
-#ifdef mfDIRECTX
-  m_Swapchain.getInterface().backbuffer->Release();
-#endif // mfDIRECTX
-  if (FAILED(hr))
-    return hr;
+  m_loadSAQ.Init("Meshes/drakefire-pistol/ScreenAlignedQuad.3ds");
 
   /**
    * @brief : Initialization of the viewport
@@ -212,7 +218,7 @@ HRESULT mfRenderManager::Init()
   /**
    * @brief : Initialize gBuffer Pass
    */
-  mfPassDesc gBuffer_Pass_Desc;
+  mfBasePassDesc gBuffer_Pass_Desc;
   gBuffer_Pass_Desc.VertexShaderFileName = L"GBuffer.fx";
   gBuffer_Pass_Desc.PixelShaderFileName = L"GBuffer.fx";
   gBuffer_Pass_Desc.RawData = m_LoadModel.getInterface();
@@ -222,9 +228,46 @@ HRESULT mfRenderManager::Init()
   gBuffer_Pass_Desc.CameraDesc = gBufferCameraDesc;
   gBuffer_Pass_Desc.SamplerDesc = SamplerStateDesc;
   gBuffer_Pass_Desc.RasterizerDesc = RasterizerDesc;
+  gBuffer_Pass_Desc.InputLayoutDesc = InputlayoutDesc;
 
   m_gBuffer_Pass.Init(gBuffer_Pass_Desc);
 
+
+  mfLightPassDesc Light_Pass_Desc1;
+  Light_Pass_Desc1.RenderTargetsTex_Ref[0] = m_gBuffer_Pass.getInterface().RenderTargetTextures[0];
+  Light_Pass_Desc1.RenderTargetsTex_Ref[1] = m_gBuffer_Pass.getInterface().RenderTargetTextures[1];
+  Light_Pass_Desc1.RenderTargetsTex_Ref[2] = m_gBuffer_Pass.getInterface().RenderTargetTextures[2];
+  Light_Pass_Desc1.RenderTargetsTex_Ref[3] = m_gBuffer_Pass.getInterface().RenderTargetTextures[3];
+  Light_Pass_Desc1.VertexShaderFileName = L"Light.fx";
+  Light_Pass_Desc1.PixelShaderFileName = L"Light.fx";
+  Light_Pass_Desc1.RawData = m_loadSAQ.getInterface();
+  Light_Pass_Desc1.ViewBufferDesc = ViewBufferDesc;
+  Light_Pass_Desc1.ProjBufferDesc = ProjBufferDesc;
+  Light_Pass_Desc1.CameraDesc = gBufferCameraDesc;
+  Light_Pass_Desc1.ModelBufferDesc = SAQBufferDesc;
+  Light_Pass_Desc1.SamplerDesc = SamplerStateDesc;
+  Light_Pass_Desc1.RasterizerDesc = RasterizerLightDesc;
+  Light_Pass_Desc1.InputLayoutDesc = Light_InputlayoutDesc;
+
+ m_Light_Pass.Init(Light_Pass_Desc1, m_Swapchain);
+  /**
+ * @brief : Initialization of Depth Stencil View
+ */
+  mfDepthStencilViewDesc depthStencilViewDesc;
+  depthStencilViewDesc.texFormat = depthStencilDesc.TexFormat/*descDepth.Format*/;
+  depthStencilViewDesc.ViewDimension = mf_DSV_DIMENSION_TEXTURE2D;
+  depthStencilViewDesc.MipSlice = 0;
+#ifdef mfDIRECTX
+  depthStencilViewDesc.Resource = m_DepthStencil.getInterface().ID;
+#endif // mfDIRECTX
+
+  m_DepthStencilView.Init(depthStencilViewDesc);
+
+#ifdef mfDIRECTX
+  m_Light_Pass.m_backbuffer->Release();
+#endif // mfDIRECTX
+  if (FAILED(hr))
+    return hr;
   return S_OK;
 }
 
@@ -246,7 +289,9 @@ void mfRenderManager::Update()
   /**
    * @brief : Update gBuffer Pass
    */
-  m_gBuffer_Pass.Update(m_DepthStencilView);
+  m_gBuffer_Pass.Update(m_DepthStencilView, m_Time);
+  m_Light_Pass.Update(m_DepthStencilView, m_gBuffer_Pass.getCamera().getDescriptor().Eye);
+//   mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->OMSetRenderTargets(1, &m_RenderTarget.getInterfaceRT().ID, m_DepthStencilView.getInterface().ID);
 }
 
 void mfRenderManager::Render()
@@ -255,6 +300,7 @@ void mfRenderManager::Render()
    * @brief : Render gBuffer Pass
    */
   m_gBuffer_Pass.Render();
+  m_Light_Pass.Render();
   m_Swapchain.Present(0, 0);
 }
 
@@ -265,9 +311,10 @@ void mfRenderManager::Destroy()
   m_DepthStencil.Destroy();
   m_DepthStencilView.Destroy();
   /**
-   * @brief : Release gBuffer Pass
+   * @brief : Release gBuffer Pass 
    */
   m_gBuffer_Pass.Destroy();
+  m_Light_Pass.Destroy();
 }
 
 void mfRenderManager::InitWindow(WNDPROC _wndProc, HINSTANCE _HInstance, int _CmdShow)

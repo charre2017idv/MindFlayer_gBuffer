@@ -33,6 +33,7 @@ private:
   mfMesh m_Mesh;
   mfConstBuffer m_ModelBuffer;
   int m_IndexSize;
+  XMMATRIX   m_Matrix = XMMatrixIdentity();
   /**
    * Methods 
    */
@@ -50,7 +51,7 @@ public:
     * @bug    : No known bugs.
     */
   void 
-  Update(mf_PRIMITIVE_TOPOLOGY _Topology);
+  Update(mf_PRIMITIVE_TOPOLOGY _Topology, float _Time);
   /**
     * @brief  : 
     * @param  : 

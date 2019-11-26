@@ -15,8 +15,9 @@ mfInputLayout::~mfInputLayout()
 {
 }
 
-HRESULT mfInputLayout::Init(mfVertexShader _VertexShader)
+HRESULT mfInputLayout::Init(mfInputLayoutDesc & _Desc, mfVertexShader _VertexShader)
 {
+  m_descriptor = _Desc;
   return mfGraphic_API::getSingleton().CreateInputLayout(*this, _VertexShader);
 }
 
@@ -33,4 +34,9 @@ void mfInputLayout::Destroy()
 mfInputLayoutID & mfInputLayout::getInterface()
 {
   return m_inputLayout;
+}
+
+mfInputLayoutDesc & mfInputLayout::getDescriptor()
+{
+  return m_descriptor;
 }

@@ -57,6 +57,7 @@ struct CBChangesEveryFrame
   XMMATRIX mWorld;
   XMFLOAT4 vMeshColor;
 };
+
 /**
  * @brief  Identifies expected resource use during rendering. The usage \
            directly reflects whether a resource is accessible by the CPU and/or 

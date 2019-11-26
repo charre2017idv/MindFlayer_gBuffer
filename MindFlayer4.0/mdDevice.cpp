@@ -144,7 +144,7 @@ HRESULT mfDevice::CreateDepthStencilView(mfDepthStencilView & _DepthStencilView)
   // Set Memory
   memset(&Desc, 0, sizeof(Desc));
   // Fill Descriptor
-  if (_DepthStencilView.getDescriptor().texFormat = mf_FORMAT_D24_UNORM_S8_UINT)
+  if (_DepthStencilView.getDescriptor().texFormat == mf_FORMAT_D24_UNORM_S8_UINT)
   {
     Desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
   }
@@ -185,10 +185,12 @@ HRESULT mfDevice::CreateVertexShader(mfVertexShader & _VertexShader)
 HRESULT mfDevice::CreateInputLayout(mfInputLayout & _InputLayout, mfVertexShader & _VertexShader)
 {
 #ifdef mfDIRECTX
+
+  UINT numElements = ARRAYSIZE(_InputLayout.getDescriptor().Desc);
   return m_Device.ID->CreateInputLayout
   (
-    _InputLayout.getInterface().Desc,
-    _InputLayout.getInterface().numElements,
+    _InputLayout.getDescriptor().Desc,
+    numElements,
     _VertexShader.getInterface().VSBlob->GetBufferPointer(),
     _VertexShader.getInterface().VSBlob->GetBufferSize(),
     &_InputLayout.getInterface().ID

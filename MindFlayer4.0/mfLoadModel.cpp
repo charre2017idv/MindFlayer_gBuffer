@@ -96,13 +96,13 @@ void mfLoadModel::AssignModelData(mfLoadModelDesc _desc)
       m_LoadModel.Vertex[i].Tex.y = -_desc.textCoord[i].y;
     }
     // Allocate Normals
-    m_LoadModel.Vertex[i].Nor.x = _desc.normals->x;
-    m_LoadModel.Vertex[i].Nor.y = _desc.normals->y;
-    m_LoadModel.Vertex[i].Nor.z = _desc.normals->z;
+    m_LoadModel.Vertex[i].Nor.x = _desc.normals[i].x;
+    m_LoadModel.Vertex[i].Nor.y = _desc.normals[i].y;
+    m_LoadModel.Vertex[i].Nor.z = _desc.normals[i].z;
     // Allocate Tangents
-    m_LoadModel.Vertex[i].Tan.x = _desc.tangents->x;
-    m_LoadModel.Vertex[i].Tan.y = _desc.tangents->y;
-    m_LoadModel.Vertex[i].Tan.z = _desc.tangents->z;
+    m_LoadModel.Vertex[i].Tan.x = _desc.tangents[i].x;
+    m_LoadModel.Vertex[i].Tan.y = _desc.tangents[i].y;
+    m_LoadModel.Vertex[i].Tan.z = _desc.tangents[i].z;
   }
 
   // Allocate the information on Index Array

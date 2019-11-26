@@ -24,7 +24,11 @@ void mfIndexBuffer::Init(mfBufferDesc _BufferDesc, mfIndexBufferDesc _PixelBuffe
   }
 }
 
-void mfIndexBuffer::Update(unsigned int _Offset)
+void mfIndexBuffer::Update()
+{
+}
+
+void mfIndexBuffer::Render(unsigned int _Offset)
 {
   mfGraphic_API::getSingleton().IASetIndexBuffer(*this, mf_FORMAT_R16_UINT, _Offset);
 }

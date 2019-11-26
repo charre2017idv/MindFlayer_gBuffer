@@ -55,7 +55,7 @@ private:
   XMMATRIX m_view;
   XMMATRIX m_proj;
 #endif // mfDIRECTX
-
+  mfCameraDesc m_descriptor;
   /**
    * Methods 
    */
@@ -106,5 +106,6 @@ private:
   void rotate(POINT* vec);
   void move(Vector3 * mat);
   
+  mfCameraDesc & getDescriptor();
 };
 

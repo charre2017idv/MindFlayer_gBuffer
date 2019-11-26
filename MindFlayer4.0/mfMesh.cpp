@@ -45,8 +45,12 @@ void mfMesh::Init(mfLoadModelID _Data)
 
 void mfMesh::Update()
 {
-  m_vertexBuffer.Update(stride, offset);
-  m_indexBuffer.Update(offset);
+}
+
+void mfMesh::Render()
+{
+  m_vertexBuffer.Render(stride, offset);
+  m_indexBuffer.Render(offset);
 }
 
 void mfMesh::Destroy()

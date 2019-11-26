@@ -26,16 +26,21 @@ struct mfInputLayoutID
   /**
    * @brief : Define the input layout
    */
-  D3D11_INPUT_ELEMENT_DESC Desc[4] =
-  {
-      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 },
-      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 },
-      { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 },
-  };
-  UINT numElements = ARRAYSIZE(Desc);
+//   D3D11_INPUT_ELEMENT_DESC Desc[4] =
+//   {     
+//       { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+//       { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 },
+//       { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 },
+//       { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 },
+//   };
+  //UINT numElements = ARRAYSIZE(Desc);
 };
 
+struct mfInputLayoutDesc
+{
+  D3D11_INPUT_ELEMENT_DESC Desc[4];
+  D3D11_INPUT_ELEMENT_DESC LightDesc[2];
+};
 /**
  * @brief : Class in charge of setting the input layout.
  */
@@ -52,7 +57,10 @@ private:
    * @brief : Structure that provides an ID of the class.
    */
   mfInputLayoutID m_inputLayout;
-  
+  /**
+   * @brief : 
+   */
+  mfInputLayoutDesc m_descriptor;
   /**
    * Functions 
    */
@@ -63,7 +71,7 @@ public:
     * @bug    : No known bugs.
     */
   HRESULT 
-  Init(mfVertexShader _VertexShader);
+  Init(mfInputLayoutDesc & _Desc, mfVertexShader _VertexShader);
   /**
     * @brief  : 
     * @param  : 
@@ -89,6 +97,11 @@ public:
     * @bug    : 
     */
   mfInputLayoutID & getInterface();
-  
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  mfInputLayoutDesc & getDescriptor();
 };
 

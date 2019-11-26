@@ -54,14 +54,14 @@ public:
     * @bug    : No known bugs.
     */
   void
-    Update(unsigned int _Offset);
+    Update();
   /**
     * @brief  :
     * @param  :
     * @bug    : No known bugs.
     */
   void
-    Render();
+    Render(unsigned int _Offset);
   /**
     * @brief  : 
     * @param  : 

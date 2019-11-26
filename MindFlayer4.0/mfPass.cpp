@@ -12,7 +12,7 @@ mfPass::~mfPass()
 {
 }
 
-void mfPass::Init(mfPassDesc _Desc)
+void mfPass::Init(mfBasePassDesc _Desc)
 {
   m_descriptor = _Desc;
 
@@ -34,8 +34,8 @@ void mfPass::Init(mfPassDesc _Desc)
 // 
 //   m_RenderTarget.Init(RenderTargetDesc);
  // mfRenderManager::getSingleton().GetDevice().CreateRenderTargets(m_RenderTarget);
-
   // Initialize Render Targets
+
   D3D11_TEXTURE2D_DESC textureDesc;
   ZeroMemory(&textureDesc, sizeof(textureDesc));
 
@@ -50,13 +50,10 @@ void mfPass::Init(mfPassDesc _Desc)
   textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
   textureDesc.CPUAccessFlags = 0;
   textureDesc.MiscFlags = 0;
-  int i;
-
-
-
-  for (i = 0; i < 4; i++)
+  
+  for (int i = 0; i < 4; i++)
   {
-    mfGraphic_API::getSingleton().GetDevice().getInterface().ID->CreateTexture2D(&textureDesc, NULL, &renderTargetTextureArray[i]);
+    mfGraphic_API::getSingleton().GetDevice().getInterface().ID->CreateTexture2D(&textureDesc, NULL, &m_gBuffer.RenderTargetTextures[i]);
   }
 
   D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc32;
@@ -66,10 +63,42 @@ void mfPass::Init(mfPassDesc _Desc)
   renderTargetViewDesc32.Texture2D.MipSlice = 0;
 
   //Create Render target view
-  mfGraphic_API::getSingleton().GetDevice().getInterface().ID->CreateRenderTargetView(renderTargetTextureArray[0], &renderTargetViewDesc32, &renderTargetViewArray[0]);
-  mfGraphic_API::getSingleton().GetDevice().getInterface().ID->CreateRenderTargetView(renderTargetTextureArray[1], &renderTargetViewDesc32, &renderTargetViewArray[1]);
-  mfGraphic_API::getSingleton().GetDevice().getInterface().ID->CreateRenderTargetView(renderTargetTextureArray[2], &renderTargetViewDesc32, &renderTargetViewArray[2]);
-  mfGraphic_API::getSingleton().GetDevice().getInterface().ID->CreateRenderTargetView(renderTargetTextureArray[3], &renderTargetViewDesc32, &renderTargetViewArray[3]);
+  mfGraphic_API::getSingleton().GetDevice().getInterface().ID->CreateRenderTargetView(m_gBuffer.RenderTargetTextures[0], &renderTargetViewDesc32, &m_gBuffer.RenderTargets[0]);
+  mfGraphic_API::getSingleton().GetDevice().getInterface().ID->CreateRenderTargetView(m_gBuffer.RenderTargetTextures[1], &renderTargetViewDesc32, &m_gBuffer.RenderTargets[1]);
+  mfGraphic_API::getSingleton().GetDevice().getInterface().ID->CreateRenderTargetView(m_gBuffer.RenderTargetTextures[2], &renderTargetViewDesc32, &m_gBuffer.RenderTargets[2]);
+  mfGraphic_API::getSingleton().GetDevice().getInterface().ID->CreateRenderTargetView(m_gBuffer.RenderTargetTextures[3], &renderTargetViewDesc32, &m_gBuffer.RenderTargets[3]);
+
+  // Initialize Shader Resources
+  D3DX11CreateShaderResourceViewFromFile
+  (
+    mfGraphic_API::getSingleton().GetDevice().getInterface().ID,
+    L"Gun_albedo.png",
+    NULL,
+    NULL,
+    &m_Textures[0],
+    NULL
+  );
+
+  D3DX11CreateShaderResourceViewFromFile
+  (
+    mfGraphic_API::getSingleton().GetDevice().getInterface().ID,
+    L"Gun_normal.png",
+    NULL,
+    NULL,
+    &m_Textures[1],
+    NULL
+  );
+
+  D3DX11CreateShaderResourceViewFromFile
+  (
+    mfGraphic_API::getSingleton().GetDevice().getInterface().ID,
+    L"Gun_specular.png",
+    NULL,
+    NULL,
+    &m_Textures[2],
+    NULL
+  );
+
 
   // Initialize Vertex Shader
   mfBaseShaderDesc VertexShaderDesc;
@@ -80,8 +109,10 @@ void mfPass::Init(mfPassDesc _Desc)
   VertexShaderDesc.BlobOut = &m_VertexShader.getInterface().VSBlob;
 #endif // mfDIRECTX
   m_VertexShader.Init(VertexShaderDesc);
+
   // Initialize Input Layout
-  m_InputLayout.Init(m_VertexShader);
+  m_InputLayout.Init(_Desc.InputLayoutDesc, m_VertexShader);
+
 #ifdef mfDIRECTX
   m_VertexShader.getInterface().VSBlob->Release();
 #endif // mfDIRECTX
@@ -97,88 +128,55 @@ void mfPass::Init(mfPassDesc _Desc)
 
   m_PixelShader.Init(PixelShaderDesc);
 
-  // Initialize View Const Buffer
-  m_ViewBuffer.Init(_Desc.ViewBufferDesc);
-
-  // Initialize Projection Const Buffer
-  m_ProjBuffer.Init(_Desc.ProjBufferDesc);
-
   // Initialize GameObject
   m_GameObject.Init(_Desc.RawData, _Desc.ModelBufferDesc);
-
-  // Initialize Shader Resources
-  D3DX11CreateShaderResourceViewFromFile
-  (
-    mfGraphic_API::getSingleton().GetDevice().getInterface().ID,
-    L"base_albedo.jpg",
-    NULL,
-    NULL,
-    &m_Textures[1],
-    NULL
-  );
-
-  D3DX11CreateShaderResourceViewFromFile
-  (
-    mfGraphic_API::getSingleton().GetDevice().getInterface().ID,
-    L"base_normal.jpg",
-    NULL,
-    NULL,
-    &m_Textures[2],
-    NULL
-  );
-
-  D3DX11CreateShaderResourceViewFromFile
-  (
-    mfGraphic_API::getSingleton().GetDevice().getInterface().ID,
-    L"base_metallic.jpg",
-    NULL,
-    NULL,
-    &m_Textures[3],
-    NULL
-  );
 
   // Initialize Sampler state
   m_SamplerState.Init(_Desc.SamplerDesc);
 
   // Initialize Rasterizer 
   m_Rasterizer.Init(_Desc.RasterizerDesc);
+  // Initialize View Const Buffer
+  m_ViewBuffer.Init(_Desc.ViewBufferDesc);
+
+  // Initialize Projection Const Buffer
+  m_ProjBuffer.Init(_Desc.ProjBufferDesc);
 
   // Initialize Camera
   m_Camera.Init(_Desc.CameraDesc);
 
-  CBNeverChanges View;
-  View.mView = XMMatrixTranspose(m_Camera.getViewMatrix());
-  m_ViewBuffer.Update(&View);
-  m_Camera.setProjMatrix(mf_PIDIV4, SCREEN_WIDTH, SCREEN_HEIGHT, 0.01f, 100.0f);
+  m_Camera.setViewMatrix();
 
-  CBChangeOnResize Projection;
-  Projection.mProjection = XMMatrixTranspose(m_Camera.getProjMatrix());
-  m_ProjBuffer.Update(&Projection);
+  m_Camera.setProjMatrix(mf_PIDIV4, SCREEN_WIDTH, SCREEN_HEIGHT, 0.1f, 10000.0f);
 }
 
-void mfPass::Update(mfDepthStencilView & _DepthStencilView)
+void mfPass::Update(mfDepthStencilView & _DepthStencilView, float _Time)
 {
   // Set Render Targets
-  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->OMSetRenderTargets(4, renderTargetViewArray, _DepthStencilView.getInterface().ID);
+  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->OMSetRenderTargets(4, m_gBuffer.RenderTargets, _DepthStencilView.getInterface().ID);
   // Clear the render target buffers
-  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->ClearRenderTargetView(renderTargetViewArray[0], ClearColor0);
-  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->ClearRenderTargetView(renderTargetViewArray[1], ClearColor1);
-  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->ClearRenderTargetView(renderTargetViewArray[2], ClearColor2);
-  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->ClearRenderTargetView(renderTargetViewArray[3], ClearColor3);
+  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->ClearRenderTargetView(m_gBuffer.RenderTargets[0], whiteClearcolor);
+  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->ClearRenderTargetView(m_gBuffer.RenderTargets[1], whiteClearcolor);
+  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->ClearRenderTargetView(m_gBuffer.RenderTargets[2], whiteClearcolor);
+  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->ClearRenderTargetView(m_gBuffer.RenderTargets[3], whiteClearcolor);
   // Clear Depth Stencil View
   mfGraphic_API::getSingleton().ClearDepthStencilView(_DepthStencilView);
-  // Set view Const Buffer
-  m_ViewBuffer.Render(0, 1, false);
-  // Set projection Const Buffer
-  m_ProjBuffer.Render(1, 1, false);
+
+  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->PSSetShaderResources(0, 3, m_Textures);
+
+  // Set View buffer
+  View.mView = XMMatrixTranspose(m_Camera.getViewMatrix());
+  m_ViewBuffer.Update(&View);
+  // Set Projection Buffer
+  Projection.mProjection = XMMatrixTranspose(m_Camera.getProjMatrix());
+  m_ProjBuffer.Update(&Projection);
+
   // Set GameObject
-  m_GameObject.Update(mf_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+  m_GameObject.Update(mf_PRIMITIVE_TOPOLOGY_TRIANGLELIST, _Time);
   // Set Vertex Shader
   m_VertexShader.Update();
   // Set Pixel Shader
   m_PixelShader.Update();
-  // Set shader resources
-  mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->PSSetShaderResources(0, 4, m_Textures);
   // Set Samplers
   m_SamplerState.Update();
   // Set Rasterizer
@@ -187,17 +185,44 @@ void mfPass::Update(mfDepthStencilView & _DepthStencilView)
 
 void mfPass::Render()
 {
+  // Set view Const Buffer
+  m_ViewBuffer.Render(0, 1, false);
+  // Set projection Const Buffer
+  m_ProjBuffer.Render(1, 1, false);
+
+  // Draw Game Object
   m_GameObject.Render();
 }
 
 void mfPass::Destroy()
 {
+  m_ViewBuffer.Destroy();
+  m_ProjBuffer.Destroy();
+  //mfBasePass::Destroy();
+
+  for (int i = 0; i < 4; i++)
+  {
+    m_gBuffer.RenderTargetTextures[i]->Release();
+    m_gBuffer.RenderTargets[i]->Release();
+  }
+  m_Textures[0]->Release();
+  m_Textures[1]->Release();
+  m_Textures[2]->Release();
+
   m_VertexShader.Destroy();
   m_PixelShader.Destroy();
   m_InputLayout.Destroy();
-  m_ViewBuffer.Destroy();
-  m_ProjBuffer.Destroy();
   m_GameObject.Destroy();
   m_SamplerState.Destroy();
   m_Rasterizer.Destroy();
+}
+
+mfgBufferPassID & mfPass::getInterface()
+{
+  return m_gBuffer;
+}
+
+mfCamera & mfPass::getCamera()
+{
+  return m_Camera;
 }
