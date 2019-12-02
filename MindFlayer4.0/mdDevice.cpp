@@ -70,6 +70,16 @@ HRESULT mfDevice::CreateRenderTargetView(mfRenderTarget & _RenderTarget)
 #endif // mfDIRECTX
 }
 
+HRESULT mfDevice::CreateRenderTargetViewBF(mfRenderTarget & _RenderTarget)
+{
+#ifdef mfDIRECTX
+  return m_Device.ID->CreateRenderTargetView(_RenderTarget.getInterface().ID, NULL, &_RenderTarget.getInterfaceRT().ID);
+#elif defined mfOPENGL
+  mfOutputLOG("mfDevice", "CreateRenderTargetView()", "Render Target View has been Initializated.");
+  return S_OK;
+#endif // mfDIRECTX
+}
+
 void mfDevice::CreateRenderTargets(mfRenderTarget & _RenderTarget)
 { 
 #ifdef mfDIRECTX

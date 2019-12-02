@@ -13,12 +13,16 @@ mfCamera::~mfCamera()
 
 void mfCamera::Init(mfCameraDesc _Desc)
 {
+  // Set Descriptor
   m_descriptor = _Desc;
+  // Set Vectors
   m_Eye = XMVectorSet(_Desc.Eye.x, _Desc.Eye.y, _Desc.Eye.z, _Desc.Eye.w);
   m_Up = XMVectorSet(_Desc.Up.x, _Desc.Up.y, _Desc.Up.z, _Desc.Up.w);
   m_Front = XMVectorSet(_Desc.Front.x, _Desc.Front.y, _Desc.Front.z, _Desc.Front.w);
   m_Right = XMVectorSet(_Desc.Right.x, _Desc.Right.y, _Desc.Right.z, _Desc.Right.w);
   m_LookAt = XMVectorSet(_Desc.LookAt.x, _Desc.LookAt.y, _Desc.LookAt.z, _Desc.LookAt.w);
+  // Set Buffers
+
 }
 
 void mfCamera::Update()

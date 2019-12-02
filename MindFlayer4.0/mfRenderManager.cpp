@@ -122,12 +122,6 @@ HRESULT mfRenderManager::Init()
   ProjBufferDesc.BindFlags = mf_BIND_CONSTANT_BUFFER;
   ProjBufferDesc.CPUAccessFlags = 0;
 
-  mfBufferDesc ModelBufferDesc;
-  ModelBufferDesc.Usage = mf_USAGE_DEFAULT;
-  ModelBufferDesc.ByteWidth = sizeof(CBChangesEveryFrame);
-  ModelBufferDesc.BindFlags = mf_BIND_CONSTANT_BUFFER;
-  ModelBufferDesc.CPUAccessFlags = 0;
-
   mfBufferDesc SAQBufferDesc;
   SAQBufferDesc.Usage = mf_USAGE_DEFAULT;
   SAQBufferDesc.ByteWidth = sizeof(CBChangesEveryFrame);
@@ -142,29 +136,7 @@ HRESULT mfRenderManager::Init()
   gBufferCameraDesc.Front = Vector4{ 0.0f, 0.0f, 0.0f, 0.0f };
   gBufferCameraDesc.Right = Vector4{ 1.0f, 0.0f, 0.0f, 0.0f };
 
-  mfSamplerDesc SamplerStateDesc;
-  SamplerStateDesc.Filter = mf_FILTER_MIN_MAG_MIP_LINEAR;
-  SamplerStateDesc.AddressU = mf_TEXTURE_ADDRESS_WRAP;
-  SamplerStateDesc.AddressV = mf_TEXTURE_ADDRESS_WRAP;
-  SamplerStateDesc.AddressW = mf_TEXTURE_ADDRESS_WRAP;
-  SamplerStateDesc.ComparisionFunc = mf_COMPARISON_NEVER;
-  SamplerStateDesc.MinLOD = 0;
-  SamplerStateDesc.MaxLOD = mf_FLOAT32_MAX;
-
-  mfRasterizerDesc RasterizerDesc;
-  RasterizerDesc.CullMode = mf_CULL_NONE;
-  RasterizerDesc.FillMode = mf_FILL_SOLID;
-
-  mfRasterizerDesc RasterizerLightDesc;
-  RasterizerLightDesc.CullMode = mf_CULL_NONE;
-  RasterizerLightDesc.FillMode = mf_FILL_SOLID;
-
-  mfInputLayoutDesc InputlayoutDesc;
-  InputlayoutDesc.Desc[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
-  InputlayoutDesc.Desc[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
-  InputlayoutDesc.Desc[2] = { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 };
-  InputlayoutDesc.Desc[3] = { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 };
-
+  
   mfInputLayoutDesc Light_InputlayoutDesc;
   Light_InputlayoutDesc.Desc[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
   Light_InputlayoutDesc.Desc[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
@@ -176,7 +148,7 @@ HRESULT mfRenderManager::Init()
   //m_LoadModel.Init("Meshes/drakefire-pistol/drakefire_pistol_low.obj");
   //m_LoadModel.Init("Meshes/ice/source/LP.obj");
   //m_LoadModel.Init("Meshes/M-FF_iOS_HERO_Peter_Parker_Spider-Man_All_New/AllNew.obj");
-  m_LoadModel.Init("Meshes/Axe/gun.obj");
+  
   /**
    * @brief : Load SAQ from file
    */
@@ -215,41 +187,29 @@ HRESULT mfRenderManager::Init()
 
   OpenTextureFile.Init(TextureFileDesc);
 
-  /**
-   * @brief : Initialize gBuffer Pass
-   */
-  mfBasePassDesc gBuffer_Pass_Desc;
-  gBuffer_Pass_Desc.VertexShaderFileName = L"GBuffer.fx";
-  gBuffer_Pass_Desc.PixelShaderFileName = L"GBuffer.fx";
-  gBuffer_Pass_Desc.RawData = m_LoadModel.getInterface();
-  gBuffer_Pass_Desc.ViewBufferDesc = ViewBufferDesc;
-  gBuffer_Pass_Desc.ProjBufferDesc = ProjBufferDesc;
-  gBuffer_Pass_Desc.ModelBufferDesc = ModelBufferDesc;
-  gBuffer_Pass_Desc.CameraDesc = gBufferCameraDesc;
-  gBuffer_Pass_Desc.SamplerDesc = SamplerStateDesc;
-  gBuffer_Pass_Desc.RasterizerDesc = RasterizerDesc;
-  gBuffer_Pass_Desc.InputLayoutDesc = InputlayoutDesc;
 
-  m_gBuffer_Pass.Init(gBuffer_Pass_Desc);
+  Initialize_gBuffer();
 
 
-  mfLightPassDesc Light_Pass_Desc1;
-  Light_Pass_Desc1.RenderTargetsTex_Ref[0] = m_gBuffer_Pass.getInterface().RenderTargetTextures[0];
-  Light_Pass_Desc1.RenderTargetsTex_Ref[1] = m_gBuffer_Pass.getInterface().RenderTargetTextures[1];
-  Light_Pass_Desc1.RenderTargetsTex_Ref[2] = m_gBuffer_Pass.getInterface().RenderTargetTextures[2];
-  Light_Pass_Desc1.RenderTargetsTex_Ref[3] = m_gBuffer_Pass.getInterface().RenderTargetTextures[3];
-  Light_Pass_Desc1.VertexShaderFileName = L"Light.fx";
-  Light_Pass_Desc1.PixelShaderFileName = L"Light.fx";
-  Light_Pass_Desc1.RawData = m_loadSAQ.getInterface();
-  Light_Pass_Desc1.ViewBufferDesc = ViewBufferDesc;
-  Light_Pass_Desc1.ProjBufferDesc = ProjBufferDesc;
-  Light_Pass_Desc1.CameraDesc = gBufferCameraDesc;
-  Light_Pass_Desc1.ModelBufferDesc = SAQBufferDesc;
-  Light_Pass_Desc1.SamplerDesc = SamplerStateDesc;
-  Light_Pass_Desc1.RasterizerDesc = RasterizerLightDesc;
-  Light_Pass_Desc1.InputLayoutDesc = Light_InputlayoutDesc;
+  //m_gBuffer_Effect.Init();
 
- m_Light_Pass.Init(Light_Pass_Desc1, m_Swapchain);
+//   mfLightPassDesc Light_Pass_Desc1;
+//   Light_Pass_Desc1.RenderTargetsTex_Ref[0] = m_gBuffer_Pass.getInterface().RenderTargetTextures[0];
+//   Light_Pass_Desc1.RenderTargetsTex_Ref[1] = m_gBuffer_Pass.getInterface().RenderTargetTextures[1];
+//   Light_Pass_Desc1.RenderTargetsTex_Ref[2] = m_gBuffer_Pass.getInterface().RenderTargetTextures[2];
+//   Light_Pass_Desc1.RenderTargetsTex_Ref[3] = m_gBuffer_Pass.getInterface().RenderTargetTextures[3];
+//   Light_Pass_Desc1.VertexShaderFileName = L"Light.fx";
+//   Light_Pass_Desc1.PixelShaderFileName = L"Light.fx";
+//   Light_Pass_Desc1.RawData = m_loadSAQ.getInterface();
+//   Light_Pass_Desc1.ViewBufferDesc = ViewBufferDesc;
+//   Light_Pass_Desc1.ProjBufferDesc = ProjBufferDesc;
+//   Light_Pass_Desc1.CameraDesc = gBufferCameraDesc;
+//   Light_Pass_Desc1.ModelBufferDesc = SAQBufferDesc;
+//   Light_Pass_Desc1.SamplerDesc = SamplerStateDesc;
+//   Light_Pass_Desc1.RasterizerDesc = RasterizerLightDesc;
+//   Light_Pass_Desc1.InputLayoutDesc = Light_InputlayoutDesc;
+
+// m_Light_Pass.Init(Light_Pass_Desc1, m_Swapchain);
   /**
  * @brief : Initialization of Depth Stencil View
  */
@@ -264,10 +224,24 @@ HRESULT mfRenderManager::Init()
   m_DepthStencilView.Init(depthStencilViewDesc);
 
 #ifdef mfDIRECTX
-  m_Light_Pass.m_backbuffer->Release();
+  //m_Light_Pass.m_backbuffer->Release();
 #endif // mfDIRECTX
   if (FAILED(hr))
     return hr;
+
+  // Initialize View Const Buffer
+  m_ViewBuffer.Init(ViewBufferDesc);
+
+  // Initialize Projection Const Buffer
+  m_ProjBuffer.Init(ProjBufferDesc);
+
+  // Initialize Camera
+  m_Camera.Init(gBufferCameraDesc);
+
+  m_Camera.setViewMatrix();
+
+  m_Camera.setProjMatrix(mf_PIDIV4, SCREEN_WIDTH, SCREEN_HEIGHT, 0.1f, 10000.0f);
+
   return S_OK;
 }
 
@@ -286,35 +260,41 @@ void mfRenderManager::Update()
       dwTimeStart = dwTimeCur;
     m_Time = (dwTimeCur - dwTimeStart) / 1000.0f;
   }
-  /**
-   * @brief : Update gBuffer Pass
-   */
-  m_gBuffer_Pass.Update(m_DepthStencilView, m_Time);
-  m_Light_Pass.Update(m_DepthStencilView, m_gBuffer_Pass.getCamera().getDescriptor().Eye);
-//   mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->OMSetRenderTargets(1, &m_RenderTarget.getInterfaceRT().ID, m_DepthStencilView.getInterface().ID);
+  // Set View buffer
+  View.mView = XMMatrixTranspose(m_Camera.getViewMatrix());
+  m_ViewBuffer.Update(&View);
+  // Set Projection Buffer
+  Projection.mProjection = XMMatrixTranspose(m_Camera.getProjMatrix());
+  m_ProjBuffer.Update(&Projection);
+  // Update gBuffer Effect
+  m_gBuffer_Effect.Update(m_DepthStencilView, NULL, m_Time);
 }
 
 void mfRenderManager::Render()
 {
+  // Set view Const Buffer
+  m_ViewBuffer.Render(0, 1, false);
+  // Set projection Const Buffer
+  m_ProjBuffer.Render(1, 1, false);
   /**
    * @brief : Render gBuffer Pass
    */
-  m_gBuffer_Pass.Render();
-  m_Light_Pass.Render();
+  m_gBuffer_Effect.Render();
   m_Swapchain.Present(0, 0);
 }
 
 void mfRenderManager::Destroy()
 {
   mfGraphic_API::getSingleton().Destroy();
+  m_ViewBuffer.Destroy();
+  m_ProjBuffer.Destroy();
   m_Swapchain.Destroy();
   m_DepthStencil.Destroy();
   m_DepthStencilView.Destroy();
   /**
    * @brief : Release gBuffer Pass 
    */
-  m_gBuffer_Pass.Destroy();
-  m_Light_Pass.Destroy();
+  m_gBuffer_Effect.Destroy();
 }
 
 void mfRenderManager::InitWindow(WNDPROC _wndProc, HINSTANCE _HInstance, int _CmdShow)
@@ -338,4 +318,100 @@ void mfRenderManager::InitWindow(WNDPROC _wndProc, HINSTANCE _HInstance, int _Cm
   wndDesc.nCmdShow = _CmdShow;
 
   m_Window.Init(wndRegisterClass, wndDesc);
+}
+
+void mfRenderManager::Initialize_gBuffer()
+{
+  mfBaseTextureDesc RenderTargetsDesc;
+  RenderTargetsDesc.Width = SCREEN_WIDTH;
+  RenderTargetsDesc.Height = SCREEN_HEIGHT;
+  RenderTargetsDesc.MipLevels = 1;
+  RenderTargetsDesc.Arraysize = 1;
+  RenderTargetsDesc.TexFormat = mf_FORMAT_R32G32B32A32_FLOAT;
+  RenderTargetsDesc.SamplerDescCount = 1;
+  RenderTargetsDesc.SamplerDescQuality = 0;
+  RenderTargetsDesc.Usage = mf_USAGE_DEFAULT;
+  RenderTargetsDesc.Bindflags = mf_BIND_RENDER_TARGET | mf_BIND_SHADER_RESOURCE;
+  RenderTargetsDesc.CPUAccessFlags = 0;
+  RenderTargetsDesc.MiscFlags = 0;
+  RenderTargetsDesc.Filepath = NULL;
+
+  mfBufferDesc ModelBufferDesc;
+  ModelBufferDesc.Usage = mf_USAGE_DEFAULT;
+  ModelBufferDesc.ByteWidth = sizeof(CBChangesEveryFrame);
+  ModelBufferDesc.BindFlags = mf_BIND_CONSTANT_BUFFER;
+  ModelBufferDesc.CPUAccessFlags = 0;
+
+  mfSamplerDesc SamplerStateDesc;
+  SamplerStateDesc.Filter = mf_FILTER_MIN_MAG_MIP_LINEAR;
+  SamplerStateDesc.AddressU = mf_TEXTURE_ADDRESS_WRAP;
+  SamplerStateDesc.AddressV = mf_TEXTURE_ADDRESS_WRAP;
+  SamplerStateDesc.AddressW = mf_TEXTURE_ADDRESS_WRAP;
+  SamplerStateDesc.ComparisionFunc = mf_COMPARISON_NEVER;
+  SamplerStateDesc.MinLOD = 0;
+  SamplerStateDesc.MaxLOD = mf_FLOAT32_MAX;
+
+  mfRasterizerDesc RasterizerDesc;
+  RasterizerDesc.CullMode = mf_CULL_NONE;
+  RasterizerDesc.FillMode = mf_FILL_SOLID;
+
+  mfRasterizerDesc RasterizerLightDesc;
+  RasterizerLightDesc.CullMode = mf_CULL_NONE;
+  RasterizerLightDesc.FillMode = mf_FILL_SOLID;
+
+  mfInputLayoutDesc InputlayoutDesc;
+  InputlayoutDesc.Desc[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+  InputlayoutDesc.Desc[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+  InputlayoutDesc.Desc[2] = { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 };
+  InputlayoutDesc.Desc[3] = { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT , D3D11_INPUT_PER_VERTEX_DATA, 0 };
+
+  // Initialize Model
+  m_LoadModel.Init("Meshes/Axe/gun.obj");
+
+  // Initialize Vertex Shader
+  mfBaseShaderDesc VertexShaderDesc;
+  VertexShaderDesc.FileName = L"GBuffer.fx";
+  VertexShaderDesc.EntryPoint = "VS";
+  VertexShaderDesc.ShaderModel = "vs_4_0";
+
+  // Initialize Pixel Shader
+  mfBaseShaderDesc PixelShaderDesc;
+  PixelShaderDesc.FileName = L"GBuffer.fx";
+  PixelShaderDesc.EntryPoint = "PS";
+  PixelShaderDesc.ShaderModel = "ps_4_0";
+
+  mfBaseTextureDesc AlbedoTexDesc;
+  AlbedoTexDesc.Filepath = L"Gun_albedo.png";
+
+  mfBaseTextureDesc NormalTexDesc;
+  NormalTexDesc.Filepath = L"Gun_normal.png";
+
+  mfBaseTextureDesc SpecularTexDesc;
+  SpecularTexDesc.Filepath = L"Gun_specular.png";
+  /**
+   * @brief : Initialize gBuffer Pass
+   */
+  mfBasePassDesc gBuffer_Pass_Desc;
+  gBuffer_Pass_Desc.RenderTargetsDesc.push_back(RenderTargetsDesc);
+  gBuffer_Pass_Desc.RenderTargetsDesc.push_back(RenderTargetsDesc);
+  gBuffer_Pass_Desc.RenderTargetsDesc.push_back(RenderTargetsDesc);
+  gBuffer_Pass_Desc.RenderTargetsDesc.push_back(RenderTargetsDesc);
+  gBuffer_Pass_Desc.ModelTexturesDesc.push_back(AlbedoTexDesc);
+  gBuffer_Pass_Desc.ModelTexturesDesc.push_back(NormalTexDesc);
+  gBuffer_Pass_Desc.ModelTexturesDesc.push_back(SpecularTexDesc);
+  gBuffer_Pass_Desc.RawData.push_back(m_LoadModel.getInterface());
+  gBuffer_Pass_Desc.VertexShaderDesc = VertexShaderDesc;
+  gBuffer_Pass_Desc.PixelShaderDesc = PixelShaderDesc;
+  gBuffer_Pass_Desc.Topology = mf_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+  gBuffer_Pass_Desc.ModelBufferDesc = ModelBufferDesc;
+  gBuffer_Pass_Desc.SamplerDesc = SamplerStateDesc;
+  gBuffer_Pass_Desc.RasterizerDesc = RasterizerDesc;
+  gBuffer_Pass_Desc.InputLayoutDesc = InputlayoutDesc;
+
+  m_gBuffer_Effect.Init(gBuffer_Pass_Desc);
+}
+
+void mfRenderManager::Initialize_Light_Pass()
+{
+  mfBasePassDesc Light_Pass_Desc;
 }

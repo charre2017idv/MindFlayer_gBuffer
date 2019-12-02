@@ -384,7 +384,6 @@
     <ClCompile Include="ImGui\ImGuiDirectX\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\ImGuiDirectX\imgui_widgets.cpp" />
     <ClCompile Include="mdDevice.cpp" />
-    <ClCompile Include="mfBasePass.cpp" />
     <ClCompile Include="mfBaseShader.cpp" />
     <ClCompile Include="mfBaseTexture.cpp" />
     <ClCompile Include="mfBuffer.cpp" />
@@ -393,6 +392,7 @@
     <ClCompile Include="mfDepthStencil.cpp" />
     <ClCompile Include="mfDepthStencilView.cpp" />
     <ClCompile Include="mfDeviceContext.cpp" />
+    <ClCompile Include="mfEffect.cpp" />
     <ClCompile Include="mfGameObject.cpp" />
     <ClCompile Include="mfImGui.cpp" />
     <ClCompile Include="mfInputLayout.cpp" />
@@ -412,6 +412,7 @@
     <ClCompile Include="mfResourceManager.cpp" />
     <ClCompile Include="mfSampler.cpp" />
     <ClCompile Include="mfSwapchain.cpp" />
+    <ClCompile Include="mfTechnique.cpp" />
     <ClCompile Include="mfTexture.cpp" />
     <ClCompile Include="mfVertexBuffer.cpp" />
     <ClCompile Include="mfVertexShader.cpp" />
@@ -433,7 +434,6 @@
     <ClInclude Include="ImGui\ImGuiDirectX\imstb_textedit.h" />
     <ClInclude Include="ImGui\ImGuiDirectX\imstb_truetype.h" />
     <ClInclude Include="mdDevice.h" />
-    <ClInclude Include="mfBasePass.h" />
     <ClInclude Include="mfBaseShader.h" />
     <ClInclude Include="mfBaseTexture.h" />
     <ClInclude Include="mfBuffer.h" />
@@ -443,6 +443,7 @@
     <ClInclude Include="mfDepthStencil.h" />
     <ClInclude Include="mfDepthStencilView.h" />
     <ClInclude Include="mfDeviceContext.h" />
+    <ClInclude Include="mfEffect.h" />
     <ClInclude Include="mfGameObject.h" />
     <ClInclude Include="mfImGui.h" />
     <ClInclude Include="mfInputLayout.h" />
@@ -463,6 +464,7 @@
     <ClInclude Include="mfResourceManager.h" />
     <ClInclude Include="mfSampler.h" />
     <ClInclude Include="mfSwapchain.h" />
+    <ClInclude Include="mfTechnique.h" />
     <ClInclude Include="mfTexture.h" />
     <ClInclude Include="mfVertexBuffer.h" />
     <ClInclude Include="mfVertexShader.h" />

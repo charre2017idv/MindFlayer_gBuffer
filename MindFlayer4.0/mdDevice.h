@@ -106,6 +106,12 @@ public:
     * @param  : 
     * @bug    : 
     */
+  HRESULT CreateRenderTargetViewBF(mfRenderTarget & _RenderTarget);
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
   void CreateRenderTargets(mfRenderTarget & _RenderTarget);
 
   /**

@@ -208,6 +208,12 @@ public:
     * @param  : 
     * @bug    : 
     */
+  void OMSetRenderTargets(vector<mfRenderTarget> & _RenderTargets, mfDepthStencilView & _DepthStencilView);
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
   void IASetInputLayout(mfInputLayout & _InputLayout);
   /**
     * @brief  : 

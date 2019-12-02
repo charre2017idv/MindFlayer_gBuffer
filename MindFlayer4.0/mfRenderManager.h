@@ -22,6 +22,8 @@
 #include "mfOpenFile.h"
 #include "mfWindow.h"
 #include "mfCamera.h"
+#include "mfEffect.h"
+#include "mfRenderTarget.h"
 #pragma once
 /**
  * Forward Class Declarations 
@@ -81,11 +83,15 @@ private:
   /**
    * @brief : 
    */
-  mfPass m_gBuffer_Pass;
-  /**
-   * @brief : 
-   */
-  mfLightPass m_Light_Pass;
+  mfEffect m_gBuffer_Effect;
+//   /**
+//    * @brief : 
+//    */
+//   mfPass m_gBuffer_Pass;
+//   /**
+//    * @brief : 
+//    */
+//   mfLightPass m_Light_Pass;
   /**
    * @brief : 
    */
@@ -94,6 +100,26 @@ private:
    * @brief : 
    */
   D3D_FEATURE_LEVEL m_featureLevel = D3D_FEATURE_LEVEL_11_0;
+    /**
+* @brief :
+*/
+  mfConstBuffer m_ViewBuffer;
+  /**
+   * @brief :
+   */
+  mfConstBuffer m_ProjBuffer;
+  /**
+   * @brief :
+   */
+  CBNeverChanges View;
+  /**
+   * @brief :
+   */
+  CBChangeOnResize Projection;
+  /**
+   * @brief :
+   */
+  mfCamera m_Camera;
   /**
    * @brief : 
    */
@@ -136,5 +162,17 @@ public:
     * @bug    : 
     */
   void InitWindow(WNDPROC _wndProc, HINSTANCE _HInstance, int _CmdShow);
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  void Initialize_gBuffer();
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  void Initialize_Light_Pass();
 };
 

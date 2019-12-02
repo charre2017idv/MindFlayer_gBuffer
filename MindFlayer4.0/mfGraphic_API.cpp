@@ -205,6 +205,11 @@ void mfGraphic_API::OMSetRenderTargets(int _numViews, mfRenderTarget & _RenderTa
 #endif // mfDIRECTX
 }
 
+void mfGraphic_API::OMSetRenderTargets(vector<mfRenderTarget>& _RenderTargets, mfDepthStencilView & _DepthStencilView)
+{
+  m_DeviceContext.OMSetRenderTargets(_RenderTargets, _DepthStencilView);
+}
+
 void mfGraphic_API::IASetInputLayout(mfInputLayout & _InputLayout)
 {
   m_DeviceContext.IASetInputLayout(_InputLayout);

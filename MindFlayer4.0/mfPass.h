@@ -22,7 +22,8 @@
 #include "mfGameObject.h"
 #include "mfRasterizer.h"
 #include "mfConstBuffer.h"
-#include "mfCamera.h"
+#include "mfTexture.h"
+#include "mfSwapchain.h"
 #pragma once
 /**
  * Forward Class Declarations 
@@ -34,16 +35,18 @@ class mfDepthStencilView;
  */
 struct mfBasePassDesc
 {
-  mfLoadModelID RawData;
-  mfBufferDesc ViewBufferDesc;
-  mfBufferDesc ProjBufferDesc;
+  vector<mfLoadModelID> RawData;
   mfBufferDesc ModelBufferDesc;
   mfSamplerDesc SamplerDesc;
-  mfCameraDesc CameraDesc;
-  WCHAR * VertexShaderFileName;
-  WCHAR * PixelShaderFileName;
+  mfBaseShaderDesc VertexShaderDesc;
+  mfBaseShaderDesc PixelShaderDesc;
   mfRasterizerDesc RasterizerDesc;
   mfInputLayoutDesc InputLayoutDesc;
+  vector<mfBaseTextureDesc> RenderTargetsDesc;
+  vector<mfBaseTextureDesc> ModelTexturesDesc;
+  mf_PRIMITIVE_TOPOLOGY Topology;
+  mfSwapchain Swapchain;
+  vector<mfBufferDesc> ConstBufferDesc;
 };
 /**
  * @brief : 
@@ -51,13 +54,13 @@ struct mfBasePassDesc
 struct mfgBufferPassID
 {
   /**
-   * @brief :
+   * @brief : 
    */
-  ID3D11RenderTargetView* RenderTargets[4];
+  vector<mfRenderTarget> RenderTargetsVec;
   /**
    * @brief : 
    */
-  ID3D11Texture2D* RenderTargetTextures[4];
+  vector<mfTexture> TexturesVec;
 };
 
   /**
@@ -97,30 +100,7 @@ private:
    * @brief : 
    */
   float whiteClearcolor[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; // red, green, blue, alpha 
-  /**
-   * @brief : 
-   */
-  ID3D11ShaderResourceView* m_Textures[2];
-  /**
-* @brief :
-*/
-  mfConstBuffer m_ViewBuffer;
-  /**
-   * @brief :
-   */
-  mfConstBuffer m_ProjBuffer;
-  /**
-   * @brief :
-   */
-  CBNeverChanges View;
-  /**
-   * @brief :
-   */
-  CBChangeOnResize Projection;
-  /**
-   * @brief :
-   */
-  mfCamera m_Camera;
+
   /**
    * @brief :
    */
@@ -129,7 +109,7 @@ private:
   /**
    * @brief :
    */
-  mfGameObject m_GameObject;
+  vector<mfGameObject> m_GameObject;
   /**
    * @brief :
    */
@@ -151,6 +131,10 @@ private:
    */
   mfRasterizer m_Rasterizer;
   /**
+   * @brief : 
+   */ 
+  vector<mfConstBuffer> m_ConstantBuffers;
+  /**
    * Methods
    */
 public:
@@ -167,7 +151,7 @@ public:
     * @bug    : No known bugs.
     */
   void
-    Update(mfDepthStencilView & _DepthStencilView, float _Time);
+    Update(mfDepthStencilView & _DepthStencilView, const void * _Resource, float _Time);
   /**
     * @brief  : 
     * @param  : 
@@ -187,7 +171,5 @@ public:
     * @bug    : 
     */
   mfgBufferPassID & getInterface();
-
-  mfCamera & getCamera();
 };
 

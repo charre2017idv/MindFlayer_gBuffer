@@ -18,7 +18,7 @@ mfRenderTarget::~mfRenderTarget()
 void mfRenderTarget::Init(mfBaseTextureDesc _Desc)
 {
   mfBaseTexture::Init(_Desc);
-  mfGraphic_API::getSingleton().GetDevice().CreateRenderTargets(*this);
+  mfGraphic_API::getSingleton().GetDevice().CreateRenderTargetView(*this);
 }
 
 void mfRenderTarget::Destroy()

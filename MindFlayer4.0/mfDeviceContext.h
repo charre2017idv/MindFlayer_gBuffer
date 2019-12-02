@@ -39,6 +39,8 @@ struct mfDeviceContextID
                context which generates rendering commands.
     */
   ID3D11DeviceContext* ID;
+  ID3D11RenderTargetView* tmpRenderTargets[4];
+  ID3D11ShaderResourceView* tmpShaderResourceView[4];
 #endif 
 
 };
@@ -93,6 +95,12 @@ public:
     * @bug    : No know Bugs.
     */
   void OMSetRenderTargets(int _numViews, mfRenderTarget & _RenderTarget, mfDepthStencilView & _DepthStencilView);
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  void OMSetRenderTargets(vector<mfRenderTarget> & _RenderTargets, mfDepthStencilView & _DepthStencilView);
 
   /**
     * @brief  : Function that sets a Viewport.
@@ -170,6 +178,13 @@ public:
     * @bug    : No know Bugs.
     */
   void ClearRenderTargetView(mfRenderTarget _RenderTarget, float _ColorRGBA[4]);
+  /**
+    * @brief  : Function in charge of cleaning multiple render targets from 
+                tmpRenderTargets array.
+    * @param  : float _ColorRGBA[4] : Clear color for the render targets
+    * @bug    : No know bugs.
+    */
+  void ClearRenderTargetView(float _ColorRGBA[4]);
 
   /**
     * @brief  : Function that clean the Depth stencil view
@@ -233,6 +248,17 @@ public:
     unsigned int _StartSlot,
     unsigned int _NumViews,
     mfTexture & _Texture
+  );
+
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  void PSSetShaderResources
+  (
+    unsigned int _StartSlot,
+    vector<mfTexture> & _Texture
   );
 
   /**

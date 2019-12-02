@@ -25,6 +25,11 @@ mfDeviceContext::mfDeviceContext()
 {
 #ifdef mfDIRECTX
   m_DeviceContext.ID = NULL;
+  for (int i = 0; i < 4; i++)
+  {
+    m_DeviceContext.tmpRenderTargets[i] = NULL;
+    m_DeviceContext.tmpShaderResourceView[i] = NULL;
+  }
 #endif // mfDIRECTX
 }
 
@@ -51,6 +56,34 @@ void mfDeviceContext::OMSetRenderTargets(int _numViews, mfRenderTarget & _Render
   );
 #elif defined mfOPENGL
   mfOutputLOG("mfDeviceContext", "OMSetRenderTargets()", "Set Render Targets has been Initializated.");
+#endif // mfDIRECTX
+}
+
+void mfDeviceContext::OMSetRenderTargets(vector<mfRenderTarget>& _RenderTargets, mfDepthStencilView & _DepthStencilView)
+{
+#ifdef mfDIRECTX  
+  // if the size of render targets vector is lower than the array
+  if (_RenderTargets.size() < 4)
+  { // Assign array as NULL
+    for (int i = 0; i < 4; i++)
+    {
+      m_DeviceContext.tmpRenderTargets[i] = NULL;
+    }
+  }
+
+  // Allocate the Render Targets ID to the array
+  for (int i = 0; i < _RenderTargets.size(); i++)
+  {
+    m_DeviceContext.tmpRenderTargets[i] = _RenderTargets[i].getInterfaceRT().ID;
+  }
+
+  m_DeviceContext.ID->OMSetRenderTargets
+  (
+    _RenderTargets.size(),
+    m_DeviceContext.tmpRenderTargets,
+    _DepthStencilView.getInterface().ID
+  );
+#elif defined mfOPENGL
 #endif // mfDIRECTX
 }
 
@@ -143,6 +176,18 @@ void mfDeviceContext::ClearRenderTargetView(mfRenderTarget _RenderTarget, float 
 #endif // mfDIRECTX
 }
 
+void mfDeviceContext::ClearRenderTargetView(float _ColorRGBA[4])
+{
+#ifdef mfDIRECTX
+  for (int i = 0; i < 4; i++)
+  {
+    m_DeviceContext.ID->ClearRenderTargetView(m_DeviceContext.tmpRenderTargets[i], _ColorRGBA);
+  }
+#elif defined mfOPENGL
+  mfOutputLOG("mfDeviceContext", "ClearRenderTargetView()", "Clear Render Target View has been Initializated.");
+#endif // mfDIRECTX
+}
+
 void mfDeviceContext::ClearDepthStencilView(mfDepthStencilView & _DepthStencilView)
 {
 #ifdef mfDIRECTX
@@ -192,6 +237,24 @@ void mfDeviceContext::PSSetShaderResources(unsigned int _StartSlot, unsigned int
 {
 #ifdef mfDIRECTX
   m_DeviceContext.ID->PSSetShaderResources(_StartSlot, _NumViews, &_Texture.getInterface().ResourceViewID);
+#elif defined mfOPENGL
+  mfOutputLOG("mfDeviceContext", "PSSetShaderResources()", "Shader Resources has been Initializated.");
+#endif // mfDIRECTX
+}
+
+void mfDeviceContext::PSSetShaderResources(unsigned int _StartSlot, vector<mfTexture>& _Texture)
+{
+#ifdef mfDIRECTX
+  for (int i = 0; i < _Texture.size(); i++)
+  {
+    m_DeviceContext.tmpShaderResourceView[i] = _Texture[i].getInterface().ResourceViewID;
+  }
+  m_DeviceContext.ID->PSSetShaderResources
+  (
+    _StartSlot, 
+    _Texture.size(),
+    m_DeviceContext.tmpShaderResourceView
+  );
 #elif defined mfOPENGL
   mfOutputLOG("mfDeviceContext", "PSSetShaderResources()", "Shader Resources has been Initializated.");
 #endif // mfDIRECTX
