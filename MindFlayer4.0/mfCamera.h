@@ -11,26 +11,28 @@
  * Headers
  */
 #include "mfDefines.h"
+#include "mfConstBuffer.h"
 #pragma once
-struct Vector4
-{
-  float x, y, z, w;
-};
-struct Vector3
-{
-  float x, y, z;
-};
+
 /**
  * @brief : 
  */
 struct mfCameraDesc
 {
-  Vector4 Eye;
-  Vector4 Up;
+  mfBufferDesc CameraBufferDesc;
   Vector4 Front;
   Vector4 Right;
-  Vector4 LookAt;
   Vector4 view;
+
+  Vector4 Eye;
+  Vector4 Up;
+  Vector4 LookAt;
+
+  float Width;
+  float Height;
+  float Near;
+  float Far;
+  float FOV;
 };
 /**
  * @brief : Class in charge of set the camera.
@@ -56,6 +58,14 @@ private:
   XMMATRIX m_proj;
 #endif // mfDIRECTX
   mfCameraDesc m_descriptor;
+  /**
+   * @brief : 
+   */
+  mfConstBuffer m_CameraBuffer;
+  /**
+   * @brief :
+   */
+  CB_CameraBuffer m_CameraVP;
   /**
    * Methods 
    */
@@ -93,8 +103,8 @@ private:
   XMMATRIX getViewMatrix();
   XMMATRIX getProjMatrix();
 #endif // mfDIRECTX
-  void setViewMatrix();
-  void setProjMatrix(float FoV, int width, int height, float Near, float Far);
+  void UpdateViewMatrix();
+  void UpdateProjMatrix();
 
   void moveLeft();
   void moveRight();

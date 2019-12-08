@@ -24,6 +24,8 @@
 #include "mfCamera.h"
 #include "mfEffect.h"
 #include "mfRenderTarget.h"
+#include "mfImGui.h"
+#include "mfTransform.h"
 #pragma once
 /**
  * Forward Class Declarations 
@@ -32,6 +34,22 @@ class mfConstBuffer;
 class mfCamera;
 class mfSampler;
 class mfRasterizer;
+
+/**
+ * @brief :
+ */
+struct mfLightShaderAttributes
+{
+  XMFLOAT4 Position;                          // 124
+  XMFLOAT4 lightDir;                          // Light direction in world space 96
+  XMFLOAT4 lightDirColor;                     // Light direction color in linear space 128
+  XMFLOAT4 ambientColor;                      // Ambient color linear space 128
+  XMFLOAT4 specularColor;                     // Specular color in linear space 128
+  float specPower;                            // Mult specular factor   32
+  float kDiffuse;                             // Diffuse mult constant  32
+  float kAmbient;                             // Ambient mult constant  32  
+  float kSpecular;                            // Specular mult constant 32
+};
 
 /**
  * @brief : 
@@ -84,14 +102,12 @@ private:
    * @brief : 
    */
   mfEffect m_gBuffer_Effect;
-//   /**
-//    * @brief : 
-//    */
-//   mfPass m_gBuffer_Pass;
-//   /**
-//    * @brief : 
-//    */
-//   mfLightPass m_Light_Pass;
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  mfLightShaderAttributes m_Shader_Light_Attributes;
   /**
    * @brief : 
    */
@@ -100,22 +116,11 @@ private:
    * @brief : 
    */
   D3D_FEATURE_LEVEL m_featureLevel = D3D_FEATURE_LEVEL_11_0;
-    /**
-* @brief :
-*/
-  mfConstBuffer m_ViewBuffer;
+
   /**
    * @brief :
    */
-  mfConstBuffer m_ProjBuffer;
-  /**
-   * @brief :
-   */
-  CBNeverChanges View;
-  /**
-   * @brief :
-   */
-  CBChangeOnResize Projection;
+  CB_CameraBuffer m_CameraVP;
   /**
    * @brief :
    */
@@ -123,7 +128,37 @@ private:
   /**
    * @brief : 
    */
+  vector<mfRenderTarget> m_gBufferRT;
+  /**
+   * @brief : 
+   */
+  mfImGui m_ImGui;
+  /**
+   * @brief : 
+   */
+  mfTransform m_Transform;
+
+  XMFLOAT3 m_Translate;
+  XMFLOAT3 m_Rotation;
+  XMFLOAT3 m_Scale;
+  float Translate[3] = { 0,0,0 };
+  float Rotation[3] = { 0,0,0 };
+  float Scale[3] = { 50,50,50 };
+  /**
+   * @brief : 
+   */
   float m_Time = 0.0f;
+  float Position[4] = { 200, 0,0,0 };
+  float lightDir[4] = {-115, 10, 1, 1};
+  float lightDirColor[4]= { 1.0f,1.0f,1.0f,1.0f };
+  float ambientColor[4] = { 0.0f,0.0f,0.0f,1.0f };
+  float specularColor[4] = { 1, 0, 0, 1 };
+  float specPower = 15.0f;
+  float kDiffuse = 1.0f;
+  float kAmbient = 0.14f;
+  float kSpecular = 1.0f;
+
+  bool isRotating = false;
   /**
    * Methods 
    */
@@ -174,5 +209,18 @@ public:
     * @bug    : 
     */
   void Initialize_Light_Pass();
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  void Initialize_CopyBB_Pass(vector<mfRenderTarget> & _tmpRenderTarget);
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  void RTSelector_Window(vector<mfRenderTarget>& _RenderTargets);
+  void Transform_Window();
 };
 

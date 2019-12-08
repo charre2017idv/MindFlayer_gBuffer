@@ -414,6 +414,7 @@
     <ClCompile Include="mfSwapchain.cpp" />
     <ClCompile Include="mfTechnique.cpp" />
     <ClCompile Include="mfTexture.cpp" />
+    <ClCompile Include="mfTransform.cpp" />
     <ClCompile Include="mfVertexBuffer.cpp" />
     <ClCompile Include="mfVertexShader.cpp" />
     <ClCompile Include="mfViewport.cpp" />
@@ -466,6 +467,7 @@
     <ClInclude Include="mfSwapchain.h" />
     <ClInclude Include="mfTechnique.h" />
     <ClInclude Include="mfTexture.h" />
+    <ClInclude Include="mfTransform.h" />
     <ClInclude Include="mfVertexBuffer.h" />
     <ClInclude Include="mfVertexShader.h" />
     <ClInclude Include="mfViewport.h" />
@@ -480,6 +482,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="copy.fx">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

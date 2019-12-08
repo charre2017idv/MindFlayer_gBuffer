@@ -65,7 +65,7 @@ void mfDeviceContext::OMSetRenderTargets(vector<mfRenderTarget>& _RenderTargets,
   // if the size of render targets vector is lower than the array
   if (_RenderTargets.size() < 4)
   { // Assign array as NULL
-    for (int i = 0; i < 4; i++)
+    for (int i = _RenderTargets.size(); i < 4; i++)
     {
       m_DeviceContext.tmpRenderTargets[i] = NULL;
     }
@@ -244,7 +244,7 @@ void mfDeviceContext::PSSetShaderResources(unsigned int _StartSlot, unsigned int
 
 void mfDeviceContext::PSSetShaderResources(unsigned int _StartSlot, vector<mfTexture>& _Texture)
 {
-#ifdef mfDIRECTX
+#ifdef mfDIRECTX 
   for (int i = 0; i < _Texture.size(); i++)
   {
     m_DeviceContext.tmpShaderResourceView[i] = _Texture[i].getInterface().ResourceViewID;
@@ -253,6 +253,24 @@ void mfDeviceContext::PSSetShaderResources(unsigned int _StartSlot, vector<mfTex
   (
     _StartSlot, 
     _Texture.size(),
+    m_DeviceContext.tmpShaderResourceView
+  );
+#elif defined mfOPENGL
+  mfOutputLOG("mfDeviceContext", "PSSetShaderResources()", "Shader Resources has been Initializated.");
+#endif // mfDIRECTX
+}
+
+void mfDeviceContext::SetShaderResources(unsigned int _StartSlot, vector<mfRenderTarget>& _RenderTargets)
+{
+#ifdef mfDIRECTX 
+  for (int i = 0; i < _RenderTargets.size(); i++)
+  {
+    m_DeviceContext.tmpShaderResourceView[i] = _RenderTargets[i].getInterface().ResourceViewID;
+  }
+  m_DeviceContext.ID->PSSetShaderResources
+  (
+    _StartSlot,
+    _RenderTargets.size(),
     m_DeviceContext.tmpShaderResourceView
   );
 #elif defined mfOPENGL

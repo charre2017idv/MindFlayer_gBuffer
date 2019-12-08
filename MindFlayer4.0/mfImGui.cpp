@@ -2,6 +2,7 @@
 #include "mdDevice.h"
 #include "mfDeviceContext.h"
 #include "mfWindow.h"
+#include "mfRenderTarget.h"
 
 mfImGui::mfImGui()
 {
@@ -48,4 +49,27 @@ void mfImGui::Render()
 #elif defined mfOPENGL
   mfOutputLOG("mfImGui", "Render()", "Render has been Initializated.");
 #endif // mfDIRECTX
+}
+
+void mfImGui::AestheticWindow(vector<mfRenderTarget>& _RenderTargets)
+{
+  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+  window_flags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
+  window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+  ImGui::SetNextWindowSize(ImVec2(872, 184), ImGuiCond_Always);
+  ImGui::SetWindowPos(ImVec2(0, 0));
+  ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 1.0f, 1.0f, 0.8f)); // Set window background to red
+  ImGui::Begin("gBuffer Pass", NULL, window_flags);
+  ImGui::PopStyleVar(2);
+  for (int i = 0; i < _RenderTargets.size(); i++)
+  {
+    ImGui::SameLine();
+    ImGui::Image(_RenderTargets[i].getInterface().ResourceViewID, ImVec2(200, 128));
+  }
+  ImGui::PopStyleColor();
+  ImGui::End();
 }

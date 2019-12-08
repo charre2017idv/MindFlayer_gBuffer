@@ -15,30 +15,39 @@ void mfCamera::Init(mfCameraDesc _Desc)
 {
   // Set Descriptor
   m_descriptor = _Desc;
-  // Set Vectors
-  m_Eye = XMVectorSet(_Desc.Eye.x, _Desc.Eye.y, _Desc.Eye.z, _Desc.Eye.w);
-  m_Up = XMVectorSet(_Desc.Up.x, _Desc.Up.y, _Desc.Up.z, _Desc.Up.w);
-  m_Front = XMVectorSet(_Desc.Front.x, _Desc.Front.y, _Desc.Front.z, _Desc.Front.w);
-  m_Right = XMVectorSet(_Desc.Right.x, _Desc.Right.y, _Desc.Right.z, _Desc.Right.w);
-  m_LookAt = XMVectorSet(_Desc.LookAt.x, _Desc.LookAt.y, _Desc.LookAt.z, _Desc.LookAt.w);
-  // Set Buffers
+  // Initialize constant Buffer
+  m_CameraBuffer.Init(_Desc.CameraBufferDesc);
 
+  UpdateViewMatrix();
+
+  UpdateProjMatrix();
 }
 
 void mfCamera::Update()
 {
-  Render();
-  setViewMatrix();
+//   Set View buffer
+//     m_CameraVP.mView = XMMatrixTranspose(m_view);
+//     // Set Projection Buffer
+//     m_CameraVP.mProjection = XMMatrixTranspose(m_proj);
+//     m_CameraBuffer.Update(&m_CameraVP);
 }
 
 void mfCamera::Render()
 {
-  m_Front = XMVector4Normalize(m_LookAt - m_Eye);
-  m_Right = XMVector4Normalize(XMVector3Cross(m_Up, m_Front));
-  m_Up = XMVector4Normalize(XMVector3Cross(m_Front, m_Right));
-  m_LookAt = m_Front + m_Eye;
+//   m_Front = XMVector4Normalize(m_LookAt - m_Eye);
+//   m_Right = XMVector4Normalize(XMVector3Cross(m_Up, m_Front));
+//   m_Up = XMVector4Normalize(XMVector3Cross(m_Front, m_Right));
+//   m_LookAt = m_Front + m_Eye;
+
+  // Set view Const Buffer
+  m_CameraBuffer.Render(0, 1, false);
 }
 
+
+void mfCamera::Destroy()
+{
+  m_CameraBuffer.Destroy();
+}
 
 XMMATRIX  mfCamera::getViewMatrix()
 {
@@ -50,16 +59,65 @@ XMMATRIX mfCamera::getProjMatrix()
   return m_proj;
 }
 
-
-void mfCamera::setViewMatrix()
+void mfCamera::UpdateViewMatrix()
 {
+  // Set Vectors
+  m_Eye = XMVectorSet
+  (
+    m_descriptor.Eye.x, 
+    m_descriptor.Eye.y, 
+    m_descriptor.Eye.z,
+    m_descriptor.Eye.w
+  );
+  m_Up = XMVectorSet
+  (
+    m_descriptor.Up.x, 
+    m_descriptor.Up.y, 
+    m_descriptor.Up.z, 
+    m_descriptor.Up.w
+  );
+  m_LookAt = XMVectorSet
+  (
+    m_descriptor.LookAt.x,
+    m_descriptor.LookAt.y,
+    m_descriptor.LookAt.z,
+    m_descriptor.LookAt.w
+  );
+  m_Front = XMVectorSet
+  (
+    m_descriptor.Front.x,
+    m_descriptor.Front.y, 
+    m_descriptor.Front.z, 
+    m_descriptor.Front.w
+  );
+  m_Right = XMVectorSet
+  (
+    m_descriptor.Right.x,
+    m_descriptor.Right.y, 
+    m_descriptor.Right.z, 
+    m_descriptor.Right.w
+  );
+
   m_view = XMMatrixLookAtLH(m_Eye, m_LookAt, m_Up);
+  // Set View buffer
+  m_CameraVP.mView = XMMatrixTranspose(m_view);
+  m_CameraBuffer.Update(&m_CameraVP);
 }
 
-void mfCamera::setProjMatrix(float FoV, int width, int height, float Near, float Far)
+void mfCamera::UpdateProjMatrix()
 {
-  m_proj = XMMatrixPerspectiveFovLH(FoV, width / (float)height, Near, Far);
+  m_proj = XMMatrixPerspectiveFovLH
+  (
+    m_descriptor.FOV,
+    m_descriptor.Width / m_descriptor.Height,
+    m_descriptor.Near,
+    m_descriptor.Far
+  );
+  m_CameraVP.mProjection = XMMatrixTranspose(m_proj);
+  m_CameraBuffer.Update(&m_CameraVP);
 }
+
+
 
 void mfCamera::moveLeft()
 {
@@ -125,8 +183,8 @@ void mfCamera::move(Vector3 * mat)
   if (mat->z < 0)
     moveBack();
 
-  Render();
-  setViewMatrix();
+  //Render();
+  UpdateViewMatrix();
 }
 
 mfCameraDesc & mfCamera::getDescriptor()

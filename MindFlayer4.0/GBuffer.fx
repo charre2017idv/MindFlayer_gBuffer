@@ -12,17 +12,13 @@ Texture2D normalTex : register(t1);
 Texture2D specularTex : register(t2);
 SamplerState samLinear : register(s0);
 
-cbuffer cbNeverChanges : register(b0)
+cbuffer camera : register(b0)
 {
-  matrix View;
+  float4x4 View;
+  float4x4 Projection;
 };
 
-cbuffer cbChangeOnResize : register(b1)
-{
-  matrix Projection;
-};
-
-cbuffer cbChangesEveryFrame : register(b2)
+cbuffer cbChangesEveryFrame : register(b1)
 {
   matrix World;
   float4 vMeshColor;
@@ -134,10 +130,10 @@ PS_OUTPUT PS(PS_INPUT Input)
 
   // Output 
   PS_OUTPUT Output;
-  Output.posRT = float4(Input.wsPos.xyz, 0.0);
-  Output.colorRT = float4(color.xyz, 0.0f);
-  Output.normalRT = float4(wsNormal.xyz, 0.0f);
-  Output.specularRT = float4(specular.xxx, 0.0f);
+  Output.posRT = float4(Input.wsPos.xyz, 1.0);
+  Output.colorRT = float4(color.xyz, 1.0f);
+  Output.normalRT = float4(wsNormal.xyz, 1.0f);
+  Output.specularRT = float4(specular.xxx, 1.0f);
 
   //Output.posRT = float4(1,1,0, 0.0);
   //Output.colorRT = float4(1,0,1, 0.0f);

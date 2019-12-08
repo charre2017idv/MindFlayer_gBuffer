@@ -250,6 +250,7 @@
     <ClInclude Include="mfLightPass.h" />
     <ClInclude Include="mfTechnique.h" />
     <ClInclude Include="mfEffect.h" />
+    <ClInclude Include="mfTransform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tutorial07.cpp" />
@@ -370,6 +371,7 @@
     <ClCompile Include="mfLightPass.cpp" />
     <ClCompile Include="mfTechnique.cpp" />
     <ClCompile Include="mfEffect.cpp" />
+    <ClCompile Include="mfTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fx">
@@ -379,6 +381,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Light.fx">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="copy.fx">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

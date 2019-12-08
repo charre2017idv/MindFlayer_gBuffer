@@ -7,8 +7,7 @@
  * @bug	   : No known bugs.
  */
 #include "mfMaterial.h"
-
-
+#include "mfRenderTarget.h"
 
 mfMaterial::mfMaterial()
 {
@@ -19,18 +18,16 @@ mfMaterial::~mfMaterial()
 {
 }
 
-void mfMaterial::Init(mfTexture _Texture)
+void mfMaterial::Init(vector<mfBaseTextureDesc> _TexturesDesc)
 {
-  m_Material.Textures.push_back(_Texture);
-}
-
-void mfMaterial::Render(int _TexIndex)
-{
-  for (int i = 0; i < m_Material.Textures.size(); i++)
+  for (int i = 0; i < _TexturesDesc.size(); i++)
   {
-    mfGraphic_API::getSingleton().PSSetShaderResources(0, 1, m_Material.Textures[_TexIndex]);
+    mfTexture tmpTexture;
+    m_Material.Textures.push_back(tmpTexture);
+    m_Material.Textures[i].Init(_TexturesDesc[i]);
   }
 }
+
 
 void mfMaterial::Destroy()
 {
@@ -43,4 +40,19 @@ void mfMaterial::Destroy()
 mfMaterialID & mfMaterial::getInterface()
 {
   return m_Material;
+}
+
+void mfMaterial::setTexture()
+{
+  mfGraphic_API::getSingleton().GetDeviceContext().PSSetShaderResources(0, m_Material.Textures);
+}
+
+void mfMaterial::setTexture(vector<mfTexture> _Textures)
+{
+  mfGraphic_API::getSingleton().GetDeviceContext().PSSetShaderResources(0, _Textures);
+}
+
+void mfMaterial::setTexture(vector<mfRenderTarget>& _RenderTargets)
+{
+  mfGraphic_API::getSingleton().GetDeviceContext().SetShaderResources(0, _RenderTargets);
 }

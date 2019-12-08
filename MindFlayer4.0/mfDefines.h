@@ -30,7 +30,6 @@
 #endif
   //#define mfOPENGL
   #include <windows.h>
-
 using namespace std;
 /**
  * @brief : Structure that allocates the position and tex coords of a mesh.
@@ -42,13 +41,9 @@ struct SimpleVertex
   XMFLOAT3 Nor;
   XMFLOAT3 Tan;
 };
-struct CBNeverChanges
+struct CB_CameraBuffer
 {
   XMMATRIX mView;
-};
-
-struct CBChangeOnResize
-{
   XMMATRIX mProjection;
 };
 
@@ -56,6 +51,15 @@ struct CBChangesEveryFrame
 {
   XMMATRIX mWorld;
   XMFLOAT4 vMeshColor;
+};
+
+struct Vector4
+{
+  float x, y, z, w;
+};
+struct Vector3
+{
+  float x, y, z;
 };
 
 /**
@@ -466,8 +470,8 @@ OutputDebugStringA("\n");
  * @brief : Window dimensions.
  */
 
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 640
+#define SCREEN_WIDTH 1350//1000
+#define SCREEN_HEIGHT 800//640
 
 #define mf_FLOAT32_MAX	( 3.402823466e+38f )
 #define mf_PI               3.141592654f

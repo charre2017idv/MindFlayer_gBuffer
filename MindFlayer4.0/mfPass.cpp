@@ -1,7 +1,7 @@
 #include "mfPass.h"
 #include "mfLoadModel.h"
 #include "mfDepthStencilView.h"
-
+#include "mfTransform.h"
 mfPass::mfPass()
 {
 }
@@ -16,42 +16,41 @@ void mfPass::Init(mfBasePassDesc _Desc)
   m_descriptor = _Desc;
  
   // Initialize Render targets
-  if (_Desc.RenderTargetsDesc.size() == 1 )
-  {
-    // Set Back buffer
-    _Desc.Swapchain.getInterface().ID->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&m_gBuffer.RenderTargetsVec[0].getInterface().ID);
-    mfGraphic_API::getSingleton().GetDevice().CreateRenderTargetViewBF(m_gBuffer.RenderTargetsVec[0]);
-    m_gBuffer.RenderTargetsVec[1].getInterfaceRT().ID = NULL;
-    m_gBuffer.RenderTargetsVec[2].getInterfaceRT().ID = NULL;
-    m_gBuffer.RenderTargetsVec[3].getInterfaceRT().ID = NULL;
-  }
-  else if (_Desc.RenderTargetsDesc.size() >= 2)
+  if (m_descriptor.PassID == GBUFFER_PASS)
   {
     for (int i = 0; i < _Desc.RenderTargetsDesc.size(); i++)
     {
       mfRenderTarget tmpRenderTargets;
       m_gBuffer.RenderTargetsVec.push_back(tmpRenderTargets);
       m_gBuffer.RenderTargetsVec[i].Init(_Desc.RenderTargetsDesc[i]);
+      // Create Shader Resources from Render Targets
+      
     }
   }
-
-  // Initialize textures
-  for (int i = 0; i < _Desc.ModelTexturesDesc.size(); i++)
+  if (m_descriptor.PassID == LIGHT_PASS)
   {
-    mfTexture tmpTexture;
-    m_gBuffer.TexturesVec.push_back(tmpTexture);
-    m_gBuffer.TexturesVec[i].Init(_Desc.ModelTexturesDesc[i]);
-  }
-
-  for (int i = 0; i < _Desc.ConstBufferDesc.size(); i++)
-  {
-    mfConstBuffer tmpConstBuffer;
-    m_ConstantBuffers.push_back(tmpConstBuffer);
-    for (int i = 0; i < m_ConstantBuffers.size(); i++)
+    for (int i = 0; i < _Desc.RenderTargetsDesc.size(); i++)
     {
-      m_ConstantBuffers[i].Init(_Desc.ConstBufferDesc[i]);
-    }
+      mfRenderTarget tmpRenderTargets;
+      m_gBuffer.RenderTargetsVec.push_back(tmpRenderTargets);
+      m_gBuffer.RenderTargetsVec[i].Init(_Desc.RenderTargetsDesc[i]);
+    }    
   }
+  if (m_descriptor.PassID == BACKBUFFER_PASS)
+  {
+    mfRenderTarget tmpRenderTargets;
+    m_gBuffer.RenderTargetsVec.push_back(tmpRenderTargets);
+    // Set Back buffer
+    ID3D11Texture2D* tmpTex;
+    _Desc.Swapchain.getInterface().ID->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&m_gBuffer.RenderTargetsVec[0].getInterface().ID);
+    mfGraphic_API::getSingleton().GetDevice().CreateRenderTargetViewBF(m_gBuffer.RenderTargetsVec[0]);
+  }
+ 
+  if (m_descriptor.PassID == LIGHT_PASS)
+  {
+    m_LightBuffer.Init(_Desc.LightBufferDesc);
+  }
+  
 
 #ifdef mfDIRECTX
   _Desc.VertexShaderDesc.BlobOut = &m_VertexShader.getInterface().VSBlob;
@@ -80,7 +79,7 @@ void mfPass::Init(mfBasePassDesc _Desc)
     m_GameObject.push_back(tmpGameObject);
     for (int j = 0; j < m_GameObject.size(); j++)
     {
-      m_GameObject[i].Init(_Desc.RawData[i], _Desc.ModelBufferDesc);
+      m_GameObject[j].Init(_Desc.RawData[i], _Desc.ModelBufferDesc, _Desc.ModelTexturesDesc);
     }
   }
 
@@ -89,48 +88,96 @@ void mfPass::Init(mfBasePassDesc _Desc)
 
   // Initialize Rasterizer 
   m_Rasterizer.Init(_Desc.RasterizerDesc);
+
 }
 
-void mfPass::Update(mfDepthStencilView & _DepthStencilView, const void * _Resource,  float _Time)
-{
-  // Set Render Targets
-  mfGraphic_API::getSingleton().OMSetRenderTargets(m_gBuffer.RenderTargetsVec, _DepthStencilView);
-  // Clear the render target buffers
-  mfGraphic_API::getSingleton().GetDeviceContext().ClearRenderTargetView(whiteClearcolor);
-  // Clear Depth Stencil View
-  mfGraphic_API::getSingleton().ClearDepthStencilView(_DepthStencilView);
- // Set shader resources
-  mfGraphic_API::getSingleton().GetDeviceContext().PSSetShaderResources(0, m_gBuffer.TexturesVec);
+void mfPass::Update(mfDepthStencilView & _DepthStencilView, mfTransform & _Transform, const void * _Resource,  float _Time)
+{   
   // Set GameObject
-  for (int i = 0; i < m_GameObject.size(); i++)
+  if (m_descriptor.PassID == GBUFFER_PASS)
   {
-    m_GameObject[i].Update(m_descriptor.Topology, _Time);
+    for (int i = 0; i < m_GameObject.size(); i++)
+    {
+      m_GameObject[i].Update(m_descriptor.Topology, _Transform, _Time);
+    }
   }
-  for (int i = 0; i < m_ConstantBuffers.size(); i++)
+
+  if (m_descriptor.PassID == LIGHT_PASS)
   {
-    m_ConstantBuffers[i].Update(_Resource);
+    m_LightBuffer.Update(_Resource);
   }
-  // Set Vertex Shader
-  m_VertexShader.Update();
-  // Set Pixel Shader
-  m_PixelShader.Update();
-  // Set Samplers
-  m_SamplerState.Update();
-  // Set Rasterizer
-  m_Rasterizer.Update();
 }
 
-void mfPass::Render()
+void mfPass::Render(mfDepthStencilView & _DepthStencilView)
 {
-  m_InputLayout.Render();
+  if (m_descriptor.PassID == GBUFFER_PASS || m_descriptor.PassID == LIGHT_PASS || m_descriptor.PassID == BACKBUFFER_PASS)
+  {
+    // Set Samplers
+    m_SamplerState.Update();
+    // Set Rasterizer
+    m_Rasterizer.Update();
+  }
+
+ // Set shader resources
+  if (m_descriptor.PassID == GBUFFER_PASS)
+  {
+    // Set Render Targets
+    mfGraphic_API::getSingleton().OMSetRenderTargets(m_gBuffer.RenderTargetsVec, _DepthStencilView);
+    // Clear the render target buffers
+    mfGraphic_API::getSingleton().GetDeviceContext().ClearRenderTargetView(BlackClearcolor);
+    // Clear Depth Stencil View
+    mfGraphic_API::getSingleton().ClearDepthStencilView(_DepthStencilView);
+    // Set Shader Resources
+    for (int i = 0; i < m_GameObject.size(); i++)
+    {
+      m_GameObject[i].setTexture();
+    }
+  }
+  if (m_descriptor.PassID == LIGHT_PASS)
+  {
+    // Set Render Targets
+    mfGraphic_API::getSingleton().OMSetRenderTargets(m_gBuffer.RenderTargetsVec, _DepthStencilView);
+    // Clear Render Targets
+    mfGraphic_API::getSingleton().GetDeviceContext().ClearRenderTargetView(m_gBuffer.RenderTargetsVec[0], BlackClearcolor);
+    // Set shader Resources
+    for (int i = 0; i < m_GameObject.size(); i++)
+    {
+      m_GameObject[i].setTexture(m_descriptor.tmpRenderTargets);
+    }
+  }
+  if (m_descriptor.PassID == BACKBUFFER_PASS)
+  {
+    // Set Render Targets
+    mfGraphic_API::getSingleton().OMSetRenderTargets(m_gBuffer.RenderTargetsVec, _DepthStencilView);
+    // Clear Render Targets
+    mfGraphic_API::getSingleton().GetDeviceContext().ClearRenderTargetView(m_gBuffer.RenderTargetsVec[0], BlackClearcolor);
+    // Clear Depth Stencil View
+    mfGraphic_API::getSingleton().ClearDepthStencilView(_DepthStencilView);
+    // Set shader Resources
+    for (int i = 0; i < m_GameObject.size(); i++)
+    {
+      m_GameObject[i].setTexture(m_descriptor.tmpRenderTargets);
+    }
+  }
+  // Clear Depth Stencil View
+  if (m_descriptor.PassID == GBUFFER_PASS || m_descriptor.PassID == LIGHT_PASS || m_descriptor.PassID == BACKBUFFER_PASS)
+  {
+    // Set Vertex Shader
+    m_VertexShader.Render();
+    // Set Input Layout
+    m_InputLayout.Render();
+    // Set Pixel Shader
+    m_PixelShader.Render();
+  }
   // Draw Game Object
   for (int i = 0; i < m_GameObject.size(); i++)
   {
     m_GameObject[i].Render();
   }
-  for (int i = 0; i < m_ConstantBuffers.size(); i++)
+  // Set Constant Buffer for the LightPass
+  if (m_descriptor.PassID == LIGHT_PASS)
   {
-    m_ConstantBuffers[i].Render(0, 1, false);
+    m_LightBuffer.Render(0, 1, true);
   }
 }
 
@@ -141,20 +188,12 @@ void mfPass::Destroy()
   {
     m_gBuffer.RenderTargetsVec[i].Destroy();
   }
-  // Destroy Textures
-  for (int i = 0; i < m_gBuffer.TexturesVec.size(); i++)
-  {
-    m_gBuffer.TexturesVec[i].Destroy();
-  }
   // Destroy Game Objects
   for (int i = 0; i < m_GameObject.size(); i++)
   {
     m_GameObject[i].Destroy();
   }
-  for (int i = 0; i < m_ConstantBuffers.size(); i++)
-  {
-    m_ConstantBuffers[i].Destroy();
-  }
+  m_LightBuffer.Destroy();
   m_VertexShader.Destroy();
   m_PixelShader.Destroy();
   m_InputLayout.Destroy();
@@ -165,4 +204,9 @@ void mfPass::Destroy()
 mfgBufferPassID & mfPass::getInterface()
 {
   return m_gBuffer;
+}
+
+mfBasePassDesc & mfPass::getDescriptor()
+{
+  return m_descriptor;
 }

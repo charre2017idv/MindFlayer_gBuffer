@@ -54,18 +54,18 @@ struct mfLightPassDesc
 };
 
 
-struct mfLightShaderAttributes
-{
-  XMFLOAT4 Position;                          // 124
-  XMFLOAT4 lightDir;                          // Light direction in world space 96
-  XMFLOAT4 lightDirColor;                     // Light direction color in linear space 128
-  XMFLOAT4 ambientColor;                      // Ambient color linear space 128
-  XMFLOAT4 specularColor;                     // Specular color in linear space 128
-  float specPower;                            // Mult specular factor   32
-  float kDiffuse;                             // Diffuse mult constant  32
-  float kAmbient;                             // Ambient mult constant  32  
-  float kSpecular;                            // Specular mult constant 32
-};
+// struct mfLightShaderAttributes
+// {
+//   XMFLOAT4 Position;                          // 124
+//   XMFLOAT4 lightDir;                          // Light direction in world space 96
+//   XMFLOAT4 lightDirColor;                     // Light direction color in linear space 128
+//   XMFLOAT4 ambientColor;                      // Ambient color linear space 128
+//   XMFLOAT4 specularColor;                     // Specular color in linear space 128
+//   float specPower;                            // Mult specular factor   32
+//   float kDiffuse;                             // Diffuse mult constant  32
+//   float kAmbient;                             // Ambient mult constant  32  
+//   float kSpecular;                            // Specular mult constant 32
+// };
 
 
 /**
@@ -117,7 +117,7 @@ private:
   /**
    * @brief : 
    */
-  mfLightShaderAttributes m_LightAttributes;
+  //mfLightShaderAttributes m_LightAttributes;
   /**
    * @brief : 
    */

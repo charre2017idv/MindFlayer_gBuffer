@@ -17,7 +17,7 @@
  * Forward Class Declaration 
  */
 class mfDepthStencilView;
-
+class mfTransform;
 /**
  * @brief : 
  */
@@ -41,21 +41,21 @@ public:
     * @bug    : No known bugs.
     */
   void 
-  Init(mfBasePassDesc _PassDesc);
+  Init(mfBasePassDesc _PassDesc, int _Index);
   /**
     * @brief  : 
     * @param  : 
     * @bug    : No known bugs.
     */
   void 
-  Update(mfDepthStencilView & _DepthStencilView, const void * _Resource, float _Time);
+  Update(mfDepthStencilView & _DepthStencilView, mfTransform & _Transform, const void * _Resource, float _Time);
   /**
     * @brief  : 
     * @param  : 
     * @bug    : No known bugs.
     */
   void 
-  Render();
+  Render(mfDepthStencilView & _DepthStencilView);
   /**
     * @brief  : 
     * @param  : 
@@ -63,5 +63,18 @@ public:
     */
   void 
   Destroy();
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  void CreatePasses();
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  mfPass & GetPass(mfPassTypeID _PassType);
+
 };
 

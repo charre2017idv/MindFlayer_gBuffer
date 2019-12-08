@@ -259,6 +259,17 @@ public:
   (
     unsigned int _StartSlot,
     vector<mfTexture> & _Texture
+  ); 
+
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  void SetShaderResources
+  (
+    unsigned int _StartSlot,
+    vector<mfRenderTarget> & _RenderTargets
   );
 
   /**

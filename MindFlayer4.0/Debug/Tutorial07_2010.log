@@ -1,4 +1,4 @@
-﻿  mfRenderManager.cpp
+﻿  mfGameObject.cpp
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\dxgitype.h(12): warning C4005: 'DXGI_STATUS_OCCLUDED': macro redefinition
   c:\program files (x86)\windows kits\10\include\10.0.17763.0\shared\winerror.h(55460): note: see previous definition of 'DXGI_STATUS_OCCLUDED'
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\dxgitype.h(13): warning C4005: 'DXGI_STATUS_CLIPPED': macro redefinition
@@ -93,9 +93,8 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamathconvert.
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamathvector.inl(1269): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamathmisc.inl(518): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamathmisc.inl(519): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
-c:\users\personal\documents\github\mindflayer_gbuffer\mindflayer4.0\mfdefines.h(136): warning C4091: 'typedef ': ignored on left of 'mf_CREATE_DEVICE_FLAG' when no variable is declared
-c:\users\personal\documents\github\mindflayer_gbuffer\mindflayer4.0\mfdefines.h(302): warning C4091: 'typedef ': ignored on left of 'mfTextureType' when no variable is declared
-c:\users\personal\documents\github\mindflayer_gbuffer\mindflayer4.0\mfcamera.h(50): warning C4324: 'mfCamera': structure was padded due to alignment specifier
-c:\users\personal\documents\github\mindflayer_gbuffer\mindflayer4.0\mfrendermanager.cpp(21): warning C4189: 'height': local variable is initialized but not referenced
-c:\users\personal\documents\github\mindflayer_gbuffer\mindflayer4.0\mfrendermanager.cpp(20): warning C4189: 'width': local variable is initialized but not referenced
+c:\users\personal\documents\github\mindflayer_gbuffer\mindflayer4.0\mfdefines.h(140): warning C4091: 'typedef ': ignored on left of 'mf_CREATE_DEVICE_FLAG' when no variable is declared
+c:\users\personal\documents\github\mindflayer_gbuffer\mindflayer4.0\mfdefines.h(306): warning C4091: 'typedef ': ignored on left of 'mfTextureType' when no variable is declared
+c:\users\personal\documents\github\mindflayer_gbuffer\mindflayer4.0\mfgameobject.cpp(26): warning C4100: '_Time': unreferenced formal parameter
+c:\users\personal\documents\github\mindflayer_gbuffer\mindflayer4.0\mfgameobject.cpp(26): warning C4100: '_Topology': unreferenced formal parameter
   Tutorial07_2010.vcxproj -> C:\Users\personal\Documents\GitHub\MindFlayer_gBuffer\MindFlayer4.0\Debug\Tutorial07.exe

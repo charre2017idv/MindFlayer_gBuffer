@@ -18,6 +18,7 @@
 class mfDevice;
 class mfDeviceContext;
 class mfWindow;
+class mfRenderTarget;
 /**
  * @brief : 
  */
@@ -74,6 +75,11 @@ private:
     */
   void 
   Destroy();
-  
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  void AestheticWindow(vector<mfRenderTarget> & _RenderTargets);
 };
 

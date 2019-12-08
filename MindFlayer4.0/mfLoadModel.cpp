@@ -27,7 +27,7 @@ mfLoadModel::~mfLoadModel()
 void mfLoadModel::Init(const char * _filepath)
 {
   // Assign content of mesh to Model variable
-  Model = aiImportFile(_filepath, aiProcessPreset_TargetRealtime_MaxQuality);
+  Model = aiImportFile(_filepath, aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast);
 
   for (size_t i = 0; i < Model->mNumMeshes; i++)
   {
@@ -93,7 +93,7 @@ void mfLoadModel::AssignModelData(mfLoadModelDesc _desc)
     else
     {
       m_LoadModel.Vertex[i].Tex.x = _desc.textCoord[i].x;
-      m_LoadModel.Vertex[i].Tex.y = -_desc.textCoord[i].y;
+      m_LoadModel.Vertex[i].Tex.y = _desc.textCoord[i].y;
     }
     // Allocate Normals
     m_LoadModel.Vertex[i].Nor.x = _desc.normals[i].x;

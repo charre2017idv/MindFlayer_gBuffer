@@ -23,7 +23,7 @@ void mfLightPass::Init(mfLightPassDesc _Desc, mfSwapchain & _Swapchain)
 
   mfBufferDesc ShaderAttributesDesc;
   ShaderAttributesDesc.Usage = mf_USAGE_DEFAULT;
-  ShaderAttributesDesc.ByteWidth = sizeof(mfLightShaderAttributes);
+  //ShaderAttributesDesc.ByteWidth = sizeof(mfLightShaderAttributes);
   ShaderAttributesDesc.BindFlags = mf_BIND_CONSTANT_BUFFER;
   ShaderAttributesDesc.CPUAccessFlags = 0;
 
@@ -57,7 +57,7 @@ void mfLightPass::Init(mfLightPassDesc _Desc, mfSwapchain & _Swapchain)
 
 
   // Initialize GameObject
-  m_GameObject.Init(_Desc.RawData, _Desc.ModelBufferDesc);
+  //m_GameObject.Init(_Desc.RawData, _Desc.ModelBufferDesc);
 
   // Initialize Sampler state
   m_SamplerState.Init(_Desc.SamplerDesc);
@@ -71,15 +71,15 @@ void mfLightPass::Init(mfLightPassDesc _Desc, mfSwapchain & _Swapchain)
 
   m_ShaderAttribtuesBuffer.Init(ShaderAttributesDesc);
   
-  m_LightAttributes.Position = { 200, 0,0,0 };
-  m_LightAttributes.lightDir = { 1, 0, 0, 1 };
-  m_LightAttributes.lightDirColor = { 1.0f,1.0f,1.0f,1.0f };
-  m_LightAttributes.ambientColor = { 1.0f,1.0f,1.0f,1.0f };
-  m_LightAttributes.specularColor = { 1, 0, 0, 1 };
-  m_LightAttributes.specPower = 15.0f;
-  m_LightAttributes.kDiffuse = 1.0f;
-  m_LightAttributes.kAmbient = 0.14f;
-  m_LightAttributes.kSpecular = 1.0f;
+//   m_LightAttributes.Position = { 200, 0,0,0 };
+//   m_LightAttributes.lightDir = { 1, 0, 0, 1 };
+//   m_LightAttributes.lightDirColor = { 1.0f,1.0f,1.0f,1.0f };
+//   m_LightAttributes.ambientColor = { 1.0f,1.0f,1.0f,1.0f };
+//   m_LightAttributes.specularColor = { 1, 0, 0, 1 };
+//   m_LightAttributes.specPower = 15.0f;
+//   m_LightAttributes.kDiffuse = 1.0f;
+//   m_LightAttributes.kAmbient = 0.14f;
+//   m_LightAttributes.kSpecular = 1.0f;
 }
 
 void mfLightPass::Update(mfDepthStencilView & _DepthStencilView, Vector4 _Eye)
@@ -92,13 +92,13 @@ void mfLightPass::Update(mfDepthStencilView & _DepthStencilView, Vector4 _Eye)
   mfGraphic_API::getSingleton().ClearDepthStencilView(_DepthStencilView);
   // Set Shader resources
   mfGraphic_API::getSingleton().GetDeviceContext().getInterface().ID->PSSetShaderResources(0, 4, m_gBufferTex);
-  m_ShaderAttribtuesBuffer.Update(&m_LightAttributes);
+  //m_ShaderAttribtuesBuffer.Update(&m_LightAttributes);
   // Set GameObject
-  m_GameObject.Update(mf_PRIMITIVE_TOPOLOGY_TRIANGLELIST, 0);
+  //m_GameObject.Update(mf_PRIMITIVE_TOPOLOGY_TRIANGLELIST,, 0);
   // Set Vertex Shader
-  m_VertexShader.Update();
+  m_VertexShader.Render();
   // Set Pixel Shader
-  m_PixelShader.Update();
+  m_PixelShader.Render();
   // Set Samplers
   m_SamplerState.Update();
   // Set Rasterizer

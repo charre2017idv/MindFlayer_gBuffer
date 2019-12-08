@@ -8,9 +8,9 @@
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
 Texture2D gBufferPosition : register(t0);
-Texture2D gBufferAlbedo : register(t1);
-Texture2D gBufferSpecular : register(t2);
-Texture2D gBufferNormal : register(t3);
+Texture2D gBufferNormal : register(t1);
+Texture2D gBufferAlbedo : register(t2);
+Texture2D gBufferSpecular : register(t3);
 SamplerState samLinear : register(s0);
 
 cbuffer mfLightShaderAttributes : register(b0)

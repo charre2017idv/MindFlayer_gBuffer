@@ -30,11 +30,24 @@
  */
 class mfLoadModel;
 class mfDepthStencilView;
+class mfTransform;
+/**
+ * @brief : Pass Type ID
+ */
+enum mfPassTypeID
+{
+
+  Default,
+  GBUFFER_PASS,
+  LIGHT_PASS,
+  BACKBUFFER_PASS
+};
 /**
  * @brief :
  */
 struct mfBasePassDesc
 {
+  mfPassTypeID PassID;
   vector<mfLoadModelID> RawData;
   mfBufferDesc ModelBufferDesc;
   mfSamplerDesc SamplerDesc;
@@ -46,7 +59,8 @@ struct mfBasePassDesc
   vector<mfBaseTextureDesc> ModelTexturesDesc;
   mf_PRIMITIVE_TOPOLOGY Topology;
   mfSwapchain Swapchain;
-  vector<mfBufferDesc> ConstBufferDesc;
+  mfBufferDesc LightBufferDesc;
+  vector<mfRenderTarget> tmpRenderTargets;
 };
 /**
  * @brief : 
@@ -57,10 +71,6 @@ struct mfgBufferPassID
    * @brief : 
    */
   vector<mfRenderTarget> RenderTargetsVec;
-  /**
-   * @brief : 
-   */
-  vector<mfTexture> TexturesVec;
 };
 
   /**
@@ -100,6 +110,7 @@ private:
    * @brief : 
    */
   float whiteClearcolor[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; // red, green, blue, alpha 
+  float BlackClearcolor[4] = { 0.0f, 0.0f, 0.0f, 1.0f }; // red, green, blue, alpha 
 
   /**
    * @brief :
@@ -132,8 +143,9 @@ private:
   mfRasterizer m_Rasterizer;
   /**
    * @brief : 
-   */ 
-  vector<mfConstBuffer> m_ConstantBuffers;
+   */
+  mfConstBuffer m_LightBuffer;
+
   /**
    * Methods
    */
@@ -151,13 +163,13 @@ public:
     * @bug    : No known bugs.
     */
   void
-    Update(mfDepthStencilView & _DepthStencilView, const void * _Resource, float _Time);
+    Update(mfDepthStencilView & _DepthStencilView, mfTransform & _Transform, const void * _Resource, float _Time);
   /**
     * @brief  : 
     * @param  : 
     * @bug    : 
     */
-  void Render();
+  void Render(mfDepthStencilView & _DepthStencilView);
   /**
     * @brief  :
     * @param  :
@@ -171,5 +183,11 @@ public:
     * @bug    : 
     */
   mfgBufferPassID & getInterface();
+  /**
+    * @brief  : 
+    * @param  : 
+    * @bug    : 
+    */
+  mfBasePassDesc & getDescriptor();
 };
 

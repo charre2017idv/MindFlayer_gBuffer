@@ -45,7 +45,7 @@ HRESULT mfPixelShader::Init(mfBaseShaderDesc _Desc)
 #endif // mfDIRECTX
 }
 
-void mfPixelShader::Update()
+void mfPixelShader::Render()
 {
 #ifdef mfDIRECTX
   mfGraphic_API::getSingleton().PSSetShader(*this);

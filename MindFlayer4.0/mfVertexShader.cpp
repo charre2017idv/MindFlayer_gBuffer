@@ -49,7 +49,7 @@ HRESULT mfVertexShader::Init(mfBaseShaderDesc _Desc)
 
 }
 
-void mfVertexShader::Update()
+void mfVertexShader::Render()
 {
 #ifdef mfDIRECTX
   mfGraphic_API::getSingleton().VSSetShader(*this);

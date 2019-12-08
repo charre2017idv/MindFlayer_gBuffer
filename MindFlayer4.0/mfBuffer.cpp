@@ -17,7 +17,7 @@
 mfBuffer::mfBuffer()
 {
 #if defined(mfDIRECTX)
-  m_buffer.ID = nullptr;
+  m_buffer.ID = NULL;
 #endif
 }
 

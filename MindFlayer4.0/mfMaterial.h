@@ -14,6 +14,7 @@
 #include "mfTexture.h"
 #include "mfGraphic_API.h"
 #pragma once
+class mfRenderTarget;
 /**
  * @brief : Class in charge of creating a new material.
  */
@@ -51,7 +52,7 @@ public:
     * @bug    : No known bugs.
     */
   void 
-  Init(mfTexture _Texture);
+  Init(vector<mfBaseTextureDesc> _TexturesDesc);
   /**
     * @brief  : 
     * @param  : 
@@ -65,7 +66,7 @@ public:
     * @bug    : No known bugs.
     */
   void 
-  Render(int _TexIndex);
+  Render();
   /**
     * @brief  : 
     * @param  : 
@@ -79,5 +80,24 @@ public:
     * @bug    : 
     */
   mfMaterialID & getInterface();
+  /**
+    * @brief  : Function that renders the texture that is relative to the initial 
+    loaded texture.
+    * @bug    : No know bugs.
+    */
+  void setTexture();
+  /**
+    * @brief  : Function that Renders textures from an external vector of textures.
+    * @param  : vector<mfTexture> _Textures : Vector of textures.
+    * @bug    : No know bugs.
+    */
+  void setTexture(vector<mfTexture> _Textures);
+  /**
+    * @brief  : Function that Renders render Targets form an external vector of
+                render targets.
+    * @param  : vector<mfRenderTarget>& _RenderTargets : Vector of render targets.
+    * @bug    : No know bugs.
+    */
+  void setTexture(vector<mfRenderTarget>& _RenderTargets);
 };
 
